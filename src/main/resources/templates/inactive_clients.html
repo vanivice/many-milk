@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>Неактивные клиенты</title>
+</head>
+<body>
+<h2>Клиенты, не делавшие заказ больше 30 дней</h2>
+<ul>
+  <li th:each="client : ${clients}">
+    <span th:text="${client.name}"></span> —
+    <span th:text="${client.phoneNumber}"></span> —
+    <span th:text="${client.lastOrderDate}"></span>
+
+    <form th:action="@{'/clients/order-today/' + ${client.id}}" method="post" style="display:inline;">
+      <button type="submit">Сделал заказ сегодня</button>
+    </form>
+  </li>
+</ul>
+
+<a href="/">← Главная</a>
+</body>
+</html>

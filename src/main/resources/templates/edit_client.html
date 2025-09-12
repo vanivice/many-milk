@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Редактировать клиента</title>
+</head>
+<body>
+<h2>Редактировать клиента</h2>
+
+<form th:action="@{'/clients/edit/' + ${client.id}}" th:object="${client}" method="post">
+  <div>
+    <label>Имя:</label>
+    <input type="text" th:field="*{name}" required />
+    <div th:if="${#fields.hasErrors('name')}" th:errors="*{name}" style="color:red;"></div>
+  </div>
+
+  <div>
+    <label>Телефон:</label>
+    <input type="text" id="phoneNumber" th:field="*{phoneNumber}" placeholder="+7 (999) 123-45-67" required />
+    <div th:if="${#fields.hasErrors('phoneNumber')}" th:errors="*{phoneNumber}" style="color:red;"></div>
+  </div>
+
+  <div>
+    <label>Дата последнего заказа:</label>
+    <input type="date" th:field="*{lastOrderDate}" required />
+  </div>
+
+  <div>
+    <button type="submit">Сохранить</button>
+  </div>
+</form>
+
+<a href="/clients">← Назад к списку</a>
+
+<script>
+  const phoneInput = document.getElementById('phoneNumber');
+  phoneInput.addEventListener('blur', () => {
+    let digits = phoneInput.value.replace(/\D/g,'');
+    if(digits.length === 11 && digits.startsWith('8')){
+      phoneInput.value = `+7 (${digits.substring(1,4)}) ${digits.substring(4,7)}-${digits.substring(7,9)}-${digits.substring(9,11)}`;
+    }
+  });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Список клиентов</title>
+</head>
+<body>
+<h2>Список клиентов</h2>
+
+<!-- Форма поиска по последним 4 цифрам номера -->
+<form th:action="@{/clients/search}" method="get" id="searchForm">
+    <input type="text" id="searchPhone" name="phone" placeholder="Введите последние 4 цифры номера" />
+    <button type="submit">Поиск</button>
+</form>
+
+<!-- Сообщение если клиент не найден -->
+<p th:if="${notFoundMessage}" th:text="${notFoundMessage}" style="color:red;"></p>
+
+<!-- Список клиентов -->
+<ul>
+    <li th:each="client : ${clients}">
+        <span th:text="${client.name}"></span> —
+        <span th:text="${client.phoneNumber}"></span> —
+        <span th:text="${client.lastOrderDate}"></span>
+
+        <!-- Действия -->
+        <a th:href="@{'/clients/edit/' + ${client.id}}">Редактировать</a> |
+        <a th:href="@{'/clients/delete/' + ${client.id}}" onclick="return confirm('Удалить клиента?')">Удалить</a> |
+
+        <!-- Сделал заказ сегодня -->
+        <form th:action="@{'/clients/order-today/' + ${client.id}}" method="post" style="display:inline;">
+            <button type="submit">Сделал заказ сегодня</button>
+        </form>
+    </li>
+</ul>
+
+<a href="/">← Главная</a>
+
+<script>
+    // Опционально: автоформат номера, если введена полная версия
+    const searchInput = document.getElementById('searchPhone');
+    const searchForm = document.getElementById('searchForm');
+
+    searchForm.addEventListener('submit', () => {
+        let digits = searchInput.value.replace(/\D/g,'');
+        if(digits.length === 11 && digits.startsWith('8')){
+            searchInput.value = `+7 (${digits.substring(1,4)}) ${digits.substring(4,7)}-${digits.substring(7,9)}-${digits.substring(9,11)}`;
+        }
+    });
+</script>
+
+</body>
+</html>
