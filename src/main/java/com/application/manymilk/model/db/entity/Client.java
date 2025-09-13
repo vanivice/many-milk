@@ -22,14 +22,30 @@ public class Client {
             message = "Телефон должен быть в формате +7 (999) 123-45-67")
     private String phoneNumber;
 
+    @Column(name = "lastOrderDate")
     private LocalDate lastOrderDate;
+
+    // Новое поле для Telegram
+    @Column(name = "telegramNick")
+    private String telegramNick;
+
+    //****
+    @Column(name = "secondaryPhoneNumber")
+    private String secondaryPhoneNumber;
+    //****
+
+    // Новое поле для WhatsApp
+    @Column(name = "whatsAppNick")
+    private String whatsAppNick;
 
     public Client() {}
 
-    public Client(String name, String phoneNumber, LocalDate lastOrderDate) {
+    public Client(String name, String phoneNumber, LocalDate lastOrderDate, String telegramNick, String whatsAppNick) {
         this.name = name;
         this.phoneNumber = phoneNumber;
         this.lastOrderDate = lastOrderDate;
+        this.telegramNick = telegramNick;
+        this.whatsAppNick = whatsAppNick;
     }
 
     public Long getId() { return id; }
@@ -43,4 +59,16 @@ public class Client {
 
     public LocalDate getLastOrderDate() { return lastOrderDate; }
     public void setLastOrderDate(LocalDate lastOrderDate) { this.lastOrderDate = lastOrderDate; }
+
+    //****
+    public String getSecondaryPhoneNumber() { return secondaryPhoneNumber; }
+    public void setSecondaryPhoneNumber(String secondaryPhoneNumber) { this.secondaryPhoneNumber = secondaryPhoneNumber; }
+    //****
+
+    public String getTelegramNick() { return telegramNick; }
+    public void setTelegramNick(String telegramNick) { this.telegramNick = telegramNick; }
+
+    public String getWhatsAppNick() { return whatsAppNick; }
+    public void setWhatsAppNick(String whatsAppNick) { this.whatsAppNick = whatsAppNick; }
 }
+

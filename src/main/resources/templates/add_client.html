@@ -3,47 +3,147 @@
 <head>
   <meta charset="UTF-8">
   <title>Добавить клиента</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f5f5f5;
+      margin: 0;
+      padding: 0;
+    }
+
+    .container {
+      max-width: 500px;
+      margin: 50px auto;
+      padding: 30px;
+      background-color: #fff;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    h2 {
+      text-align: center;
+      color: #333;
+      margin-bottom: 30px;
+    }
+
+    form div {
+      margin-bottom: 20px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    label {
+      margin-bottom: 5px;
+      font-weight: bold;
+    }
+
+    input[type="text"],
+    input[type="date"] {
+      padding: 10px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-size: 14px;
+    }
+
+    button[type="submit"] {
+      padding: 10px 20px;
+      background-color: #007BFF;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    button[type="submit"]:hover {
+      background-color: #0056b3;
+    }
+
+    .error-message {
+      color: red;
+      font-size: 13px;
+      margin-top: 5px;
+    }
+
+    .back-link {
+      display: block;
+      margin-top: 30px;
+      text-align: center;
+      text-decoration: none;
+      color: #007BFF;
+      font-weight: bold;
+    }
+
+    .back-link:hover {
+      color: #0056b3;
+    }
+  </style>
 </head>
 <body>
-<h2>Добавить нового клиента</h2>
+<div class="container">
+  <h2>Добавить нового клиента</h2>
 
-<form th:action="@{/clients/add}" th:object="${client}" method="post">
-  <div>
-    <label>Имя:</label>
-    <input type="text" th:field="*{name}" required />
-    <div th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>
-  </div>
+  <form th:action="@{/clients/add}" th:object="${client}" method="post">
+    <div>
+      <label>Имя:</label>
+      <input type="text" th:field="*{name}" required />
+      <div th:if="${#fields.hasErrors('name')}" th:errors="*{name}" class="error-message"></div>
+    </div>
 
-  <div>
-    <label>Телефон:</label>
-    <input type="text" id="phoneNumber" th:field="*{phoneNumber}" placeholder="+7 (999) 123-45-67" required />
-    <!-- Ошибка валидации -->
-    <div th:if="${#fields.hasErrors('phoneNumber')}" th:errors="*{phoneNumber}" style="color:red;"></div>
-  </div>
+    <div>
+      <label>Телефон:</label>
+      <input type="text" id="phoneNumber" th:field="*{phoneNumber}" placeholder="Формат: +7 (ХХХ) ХХХ-ХХ-ХХ" required />
+      <div th:if="${#fields.hasErrors('phoneNumber')}" th:errors="*{phoneNumber}" class="error-message"></div>
+    </div>
 
-  <div>
-    <label>Дата последнего заказа:</label>
-    <input type="date" th:field="*{lastOrderDate}" required />
-  </div>
+    <div>
+      <label>Telegram:</label>
+      <input type="text" th:field="*{telegramNick}" placeholder="Например: @my_telegram" />
+    </div>
 
-  <div>
-    <button type="submit">Добавить клиента</button>
-  </div>
-</form>
+    <div>
+      <label>WhatsApp:</label>
+      <input type="text" th:field="*{whatsAppNick}" placeholder="Например: my_whatsapp" />
+    </div>
 
-<a href="/">← Главная</a>
+    <div>
+      <label>Дата последнего заказа:</label>
+      <input type="date" th:field="*{lastOrderDate}" title="Можно оставить пустым" />
+      <div th:if="${#fields.hasErrors('lastOrderDate')}" th:errors="*{lastOrderDate}" class="error-message"></div>
+    </div>
+
+    <div>
+      <button type="submit">Добавить клиента</button>
+    </div>
+  </form>
+
+  <a href="/" class="back-link">← Главная</a>
+</div>
 
 <script>
-  // Автоформатирование номера телефона при потере фокуса
   const phoneInput = document.getElementById('phoneNumber');
 
+  // Разрешаем только цифры и "+" в начале
+  phoneInput.addEventListener('input', () => {
+    let value = phoneInput.value;
+    if (value.startsWith('+')) {
+      value = '+' + value.substring(1).replace(/\D/g,'');
+    } else {
+      value = value.replace(/\D/g,'');
+    }
+    phoneInput.value = value;
+  });
+
+  // Универсальное автоформатирование при потере фокуса
   phoneInput.addEventListener('blur', () => {
     let digits = phoneInput.value.replace(/\D/g, '');
-    if (digits.length === 11 && digits.startsWith('8')) {
-      phoneInput.value = `+7 (${digits.substring(1,4)}) ${digits.substring(4,7)}-${digits.substring(7,9)}-${digits.substring(9,11)}`;
+    if (digits.length === 11) {
+      if (digits.startsWith('8') || digits.startsWith('7')) {
+        phoneInput.value = `+7 (${digits.substring(1,4)}) ${digits.substring(4,7)}-${digits.substring(7,9)}-${digits.substring(9,11)}`;
+      }
     }
   });
 </script>
-
 </body>
 </html>

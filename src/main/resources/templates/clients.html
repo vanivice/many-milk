@@ -1,46 +1,432 @@
+<!--<!DOCTYPE html>-->
+<!--<html xmlns:th="http://www.thymeleaf.org">-->
+<!--<head>-->
+<!--    <meta charset="UTF-8">-->
+<!--    <title>Список клиентов</title>-->
+<!--    <link rel="stylesheet" th:href="@{/css/style.css}">-->
+<!--    <style>-->
+<!--        /* Расширение контейнера для таблиц */-->
+<!--        .container {-->
+<!--            max-width: 1000px; /* увеличенная ширина */-->
+<!--            margin: 50px auto;-->
+<!--            padding: 30px;-->
+<!--            background-color: #fff;-->
+<!--            border-radius: 12px;-->
+<!--            box-shadow: 0 4px 12px rgba(0,0,0,0.1);-->
+<!--            overflow-x: auto; /* горизонтальная прокрутка при необходимости */-->
+<!--            font-family: Arial, sans-serif;-->
+<!--        }-->
+
+<!--        h2 {-->
+<!--            text-align: center;-->
+<!--            color: #333;-->
+<!--            margin-bottom: 30px;-->
+<!--        }-->
+
+<!--        /* Форма поиска */-->
+<!--        .search-form {-->
+<!--            text-align: center;-->
+<!--            margin-bottom: 25px;-->
+<!--        }-->
+<!--        .search-form input[type="tel"] {-->
+<!--            padding: 10px 15px;-->
+<!--            width: 220px;-->
+<!--            border-radius: 6px;-->
+<!--            border: 1px solid #ccc;-->
+<!--            font-size: 14px;-->
+<!--            margin-right: 10px;-->
+<!--        }-->
+<!--        .search-form button {-->
+<!--            padding: 10px 20px;-->
+<!--            background-color: #007BFF;-->
+<!--            color: #fff;-->
+<!--            border: none;-->
+<!--            border-radius: 6px;-->
+<!--            font-weight: bold;-->
+<!--            cursor: pointer;-->
+<!--            transition: background-color 0.3s;-->
+<!--        }-->
+<!--        .search-form button:hover {-->
+<!--            background-color: #0056b3;-->
+<!--        }-->
+
+<!--        .not-found {-->
+<!--            color: red;-->
+<!--            text-align: center;-->
+<!--            margin-bottom: 20px;-->
+<!--        }-->
+
+<!--        /* Таблица клиентов */-->
+<!--        table {-->
+<!--            width: 100%;-->
+<!--            border-collapse: collapse;-->
+<!--            margin-bottom: 20px;-->
+<!--        }-->
+<!--        th, td {-->
+<!--            padding: 12px 15px;-->
+<!--            border: 1px solid #ddd;-->
+<!--            text-align: center;-->
+<!--            word-break: break-word;-->
+<!--        }-->
+<!--        th {-->
+<!--            background-color: #007BFF;-->
+<!--            color: #fff;-->
+<!--        }-->
+<!--        tr:nth-child(even) {-->
+<!--            background-color: #f9f9f9;-->
+<!--        }-->
+
+<!--        /* Ограничиваем ширину колонок для длинных данных */-->
+<!--        td:nth-child(3), /* Telegram */-->
+<!--        td:nth-child(4)  /* WhatsApp */ {-->
+<!--            max-width: 100px;-->
+<!--        }-->
+
+<!--        /* Кнопки действий – единая ширина и вид */-->
+<!--        .client-actions {-->
+<!--            display: flex;-->
+<!--            flex-direction: column; /* вертикально */-->
+<!--            gap: 5px;-->
+<!--            align-items: center;-->
+<!--        }-->
+
+<!--        /* Универсальные правила для всех кнопок действий */-->
+<!--        .client-actions a,-->
+<!--        .client-actions form button {-->
+<!--            width: 160px;           /* одинаковая ширина */-->
+<!--            padding: 6px 0;-->
+<!--            text-align: center;-->
+<!--            border-radius: 6px;-->
+<!--            font-weight: bold;-->
+<!--            color: #fff;-->
+<!--            text-decoration: none;-->
+<!--            border: none;-->
+<!--            cursor: pointer;-->
+<!--            font-size: 14px;-->
+<!--            white-space: nowrap;-->
+<!--        }-->
+
+<!--        /* Синие кнопки для Редактировать */-->
+<!--        .client-actions a.edit-btn {-->
+<!--            background-color: #007BFF;-->
+<!--        }-->
+<!--        .client-actions a.edit-btn:hover {-->
+<!--            background-color: #0056b3;-->
+<!--        }-->
+
+<!--        /* Красная кнопка для Удалить */-->
+<!--        .client-actions a.delete-btn {-->
+<!--            background-color: #dc3545;-->
+<!--        }-->
+<!--        .client-actions a.delete-btn:hover {-->
+<!--            background-color: #a71d2a;-->
+<!--        }-->
+
+<!--        /* Зеленая кнопка для "Сделал заказ сегодня" */-->
+<!--        .client-actions form button.order-today-btn {-->
+<!--            background-color: #28a745;-->
+<!--        }-->
+<!--        .client-actions form button.order-today-btn:hover {-->
+<!--            background-color: #1e7e34;-->
+<!--        }-->
+
+
+<!--        /* Ссылка назад */-->
+<!--        .back-link {-->
+<!--            display: block;-->
+<!--            margin-top: 30px;-->
+<!--            text-align: center;-->
+<!--            text-decoration: none;-->
+<!--            color: #007BFF;-->
+<!--            font-weight: bold;-->
+<!--        }-->
+<!--        .back-link:hover {-->
+<!--            color: #0056b3;-->
+<!--        }-->
+<!--    </style>-->
+<!--</head>-->
+<!--<body>-->
+<!--<div class="container">-->
+<!--    <h2>Список клиентов</h2>-->
+
+<!--    &lt;!&ndash; Форма поиска &ndash;&gt;-->
+<!--    <form th:action="@{/clients/search}" method="get" id="searchForm" class="search-form">-->
+<!--        <input type="tel" id="searchPhone" name="phone" placeholder="Введите номер или последние 4 цифры" maxlength="12" required />-->
+<!--        <button type="submit">Поиск</button>-->
+<!--    </form>-->
+
+<!--    &lt;!&ndash; Сообщение если клиент не найден &ndash;&gt;-->
+<!--    <p th:if="${notFoundMessage}" th:text="${notFoundMessage}" class="not-found"></p>-->
+
+<!--    &lt;!&ndash; Таблица клиентов &ndash;&gt;-->
+<!--    <table>-->
+<!--        <thead>-->
+<!--        <tr>-->
+<!--            <th>Имя</th>-->
+<!--            <th>Телефон</th>-->
+<!--            <th>Telegram</th>-->
+<!--            <th>WhatsApp</th>-->
+<!--            <th>Последний заказ</th>-->
+<!--            <th>Действия</th>-->
+<!--        </tr>-->
+<!--        </thead>-->
+<!--        <tbody>-->
+<!--        <tr th:each="client : ${clients}">-->
+<!--            <td th:text="${client.name}"></td>-->
+<!--            <td th:text="${client.phoneNumber}"></td>-->
+<!--            <td th:text="${client.telegramNick}"></td>-->
+<!--            <td th:text="${client.whatsAppNick}"></td>-->
+<!--            <td th:text="${client.lastOrderDate}"></td>-->
+<!--            <td class="client-actions">-->
+<!--                <a th:href="@{'/clients/edit/' + ${client.id}}" class="edit-btn">Редактировать</a>-->
+<!--                <a th:href="@{'/clients/delete/' + ${client.id}}" class="delete-btn"-->
+<!--                   onclick="return confirm('Удалить клиента?')">Удалить</a>-->
+<!--                <form th:action="@{'/clients/order-today/' + ${client.id}}" method="post">-->
+<!--                    <button type="submit" class="order-today-btn">Сделал заказ сегодня</button>-->
+<!--                </form>-->
+<!--            </td>-->
+<!--        </tr>-->
+<!--        </tbody>-->
+<!--    </table>-->
+
+<!--    <a href="/" class="back-link">← Главная</a>-->
+<!--</div>-->
+
+<!--<script>-->
+<!--    const searchInput = document.getElementById('searchPhone');-->
+<!--    const searchForm = document.getElementById('searchForm');-->
+
+<!--    // Блокировка ввода нецифровых символов-->
+<!--    searchInput.addEventListener('input', () => {-->
+<!--        let value = searchInput.value;-->
+<!--        if (value.startsWith('+')) {-->
+<!--            // сохраняем "+" в начале, остальное только цифры-->
+<!--            value = '+' + value.substring(1).replace(/\D/g,'');-->
+<!--        } else {-->
+<!--            value = value.replace(/\D/g,'');-->
+<!--        }-->
+<!--        searchInput.value = value;-->
+<!--    });-->
+
+<!--    // Автоформат полного номера-->
+<!--    searchForm.addEventListener('submit', () => {-->
+<!--        let digits = searchInput.value.replace(/\D/g,'');-->
+<!--        if(digits.length === 11 && digits.startsWith('8')){-->
+<!--            searchInput.value = `+7 (${digits.substring(1,4)}) ${digits.substring(4,7)}-${digits.substring(7,9)}-${digits.substring(9,11)}`;-->
+<!--        }-->
+<!--    });-->
+<!--</script>-->
+<!--</body>-->
+<!--</html>-->
+
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>Список клиентов</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <style>
+        .container {
+            max-width: 1000px;
+            margin: 50px auto;
+            padding: 30px;
+            background-color: #fff;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            overflow-x: auto;
+            font-family: Arial, sans-serif;
+        }
+        h2 { text-align: center; color: #333; margin-bottom: 30px; }
+        .search-form { text-align: center; margin-bottom: 25px; }
+        .search-form input[type="tel"] { padding: 10px 15px; width: 220px; border-radius: 6px; border: 1px solid #ccc; font-size: 14px; margin-right: 10px; }
+        .search-form button { padding: 10px 20px; background-color: #007BFF; color: #fff; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; transition: background-color 0.3s; }
+        .search-form button:hover { background-color: #0056b3; }
+        .not-found { color: red; text-align: center; margin-bottom: 20px; }
+        table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+        th, td { padding: 12px 15px; border: 1px solid #ddd; text-align: center; word-break: break-word; }
+        th { background-color: #007BFF; color: #fff; }
+        tr:nth-child(even) { background-color: #f9f9f9; }
+        td:nth-child(3), td:nth-child(4) { max-width: 100px; }
+
+        .client-actions { display: flex; flex-direction: column; gap: 5px; align-items: center; }
+        .client-actions a, .client-actions form button, .client-actions button { width: 160px; padding: 6px 0; text-align: center; border-radius: 6px; font-weight: bold; color: #fff; text-decoration: none; border: none; cursor: pointer; font-size: 14px; white-space: nowrap; }
+        .edit-btn { background-color: #007BFF; }
+        .edit-btn:hover { background-color: #0056b3; }
+        .delete-btn { background-color: #dc3545; }
+        .delete-btn:hover { background-color: #a71d2a; }
+        .order-today-btn { background-color: #28a745; }
+        .order-today-btn:hover { background-color: #1e7e34; }
+        .back-link { display: block; margin-top: 30px; text-align: center; text-decoration: none; color: #007BFF; font-weight: bold; }
+        .back-link:hover { color: #0056b3; }
+        .back-left-link { display: block; margin-top: 30px; text-align: left; text-decoration: none; color: #007BFF; font-weight: bold; }
+        .back-left-link:hover { color: #0056b3; }
+
+        /* Модальное окно */
+        .modal { display: none; position: fixed; z-index: 100; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.4); }
+        .modal-content { background-color: #fefefe; margin: 15% auto; padding: 20px; border: 1px solid #888; width: 300px; border-radius: 10px; }
+        .close-btn { color: #aaa; float: right; font-size: 20px; font-weight: bold; cursor: pointer; }
+        .close-btn:hover { color: black; }
+        .modal input { width: 100%; padding: 8px; margin: 10px 0; border-radius: 6px; border: 1px solid #ccc; }
+        .save-btn { background-color: #28a745; color: #fff; margin-top: 5px; width: 100%; padding: 8px; border-radius: 6px; border: none; cursor: pointer; font-weight: bold; }
+        .save-btn:hover { background-color: #1e7e34; }
+        .modal .delete-btn { background-color: #dc3545; color: #fff; margin-top: 5px; width: 100%; padding: 8px; border-radius: 6px; border: none; cursor: pointer; font-weight: bold; }
+        .modal .delete-btn:hover { background-color: #a71d2a; }
+    </style>
 </head>
 <body>
-<h2>Список клиентов</h2>
+<div class="container">
 
-<!-- Форма поиска по последним 4 цифрам номера -->
-<form th:action="@{/clients/search}" method="get" id="searchForm">
-    <input type="text" id="searchPhone" name="phone" placeholder="Введите последние 4 цифры номера" />
-    <button type="submit">Поиск</button>
-</form>
+    <!-- Кнопка добавления клиента в верхний левый угол -->
+    <a href="/" class="back-left-link">← Главная</a>
 
-<!-- Сообщение если клиент не найден -->
-<p th:if="${notFoundMessage}" th:text="${notFoundMessage}" style="color:red;"></p>
+    <h2>Список клиентов</h2>
 
-<!-- Список клиентов -->
-<ul>
-    <li th:each="client : ${clients}">
-        <span th:text="${client.name}"></span> —
-        <span th:text="${client.phoneNumber}"></span> —
-        <span th:text="${client.lastOrderDate}"></span>
+    <!-- Форма поиска -->
+    <form th:action="@{/clients/searchByPhone}" method="get" id="searchPhoneForm" class="search-form">
+        <input type="tel" id="searchPhone" name="phone" placeholder="Введите номер или последние 4 цифры" maxlength="12" required />
+        <button type="submit">Поиск</button>
+    </form>
 
-        <!-- Действия -->
-        <a th:href="@{'/clients/edit/' + ${client.id}}">Редактировать</a> |
-        <a th:href="@{'/clients/delete/' + ${client.id}}" onclick="return confirm('Удалить клиента?')">Удалить</a> |
+    <style>
+        .search-form input[type="tel"] {
+            padding: 10px 15px;
+            width: 300px; /* увеличенная ширина */
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            font-size: 14px;
+            margin-right: 10px;
+        }
+    </style>
 
-        <!-- Сделал заказ сегодня -->
-        <form th:action="@{'/clients/order-today/' + ${client.id}}" method="post" style="display:inline;">
-            <button type="submit">Сделал заказ сегодня</button>
+    <!-- Форма поиска по нику Telegram/WhatsApp -->
+    <form th:action="@{/clients/searchByNick}" method="get" id="searchNickForm" class="search-form" style="margin-top:10px;">
+        <input type="text" id="searchNick" name="nick" placeholder="Введите ник Telegram или WhatsApp"
+               required /> <!-- поле не может быть пустым -->
+        <button type="submit">Поиск</button>
+    </form>
+
+    <style>
+        .search-form input[type="text"] {
+            padding: 10px 15px;
+            width: 300px; /* увеличенная ширина */
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            font-size: 14px;
+            margin-right: 10px;
+        }
+    </style>
+
+    <p th:if="${notFoundMessage}" th:text="${notFoundMessage}" class="not-found"></p>
+
+    <!-- Таблица клиентов -->
+    <table>
+        <thead>
+        <tr>
+            <th>Имя</th>
+            <th>Телефон</th>
+            <th>Telegram</th>
+            <th>WhatsApp</th>
+            <th>Последний заказ</th>
+            <th>Действия</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="client : ${clients}">
+            <td th:text="${client.name}"></td>
+            <td>
+                <span th:text="${client.phoneNumber}"></span>
+                <button type="button"
+                        th:attr="data-client-id=${client.id}, data-secondary=${client.secondaryPhoneNumber}"
+                        onclick="openModal(this.getAttribute('data-client-id'), this.getAttribute('data-secondary'))"
+                        style="margin-left:5px; padding:2px 5px; font-size:12px;">
+                    Доп. номер
+                </button>
+            </td>
+            <td th:text="${client.telegramNick}"></td>
+            <td th:text="${client.whatsAppNick}"></td>
+            <td th:text="${client.lastOrderDate}"></td>
+            <td class="client-actions">
+                <a th:href="@{'/clients/edit/' + ${client.id}}" class="edit-btn">Редактировать</a>
+                <a th:href="@{'/clients/delete/' + ${client.id}}" class="delete-btn" onclick="return confirm('Удалить клиента?')">Удалить</a>
+                <form th:action="@{'/clients/order-today/' + ${client.id}}" method="post">
+                    <button type="submit" class="order-today-btn">Сделал заказ сегодня</button>
+                </form>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <!-- Добавляем стили для ограничения ширины -->
+    <style>
+        /* Ограничиваем ширину для столбцов Телефон, Telegram и WhatsApp */
+        table tbody td:nth-child(1), /* Телефон */
+        table tbody td:nth-child(2), /* Телефон */
+        table tbody td:nth-child(3), /* Telegram */
+        table tbody td:nth-child(4)  /* WhatsApp */ {
+            max-width: 180px;      /* максимальная ширина */
+            overflow: hidden;      /* скрываем лишний текст */
+            text-overflow: ellipsis; /* показываем многоточие */
+        }
+    </style>
+
+    <a href="/" class="back-link">← Главная</a>
+</div>
+
+<!-- Модальное окно для доп. номера -->
+<div id="secondaryModal" class="modal">
+    <div class="modal-content">
+        <span class="close-btn" onclick="closeModal()">&times;</span>
+        <form id="secondaryForm" method="post">
+            <label>Доп. номер:</label>
+            <input type="text" id="secondaryInput" name="secondaryPhoneNumber" placeholder="Введите доп. номер">
+            <button type="submit" class="save-btn">Сохранить</button>
+            <button type="button" class="delete-btn" onclick="deleteSecondary()">Удалить</button>
         </form>
-    </li>
-</ul>
-
-<a href="/">← Главная</a>
+    </div>
+</div>
 
 <script>
-    // Опционально: автоформат номера, если введена полная версия
+    let currentClientId = null;
+
+    function openModal(clientId, currentSecondary) {
+        currentClientId = clientId;
+        const modal = document.getElementById('secondaryModal');
+        const input = document.getElementById('secondaryInput');
+
+        input.value = currentSecondary || '';
+        document.getElementById('secondaryForm').action = '/clients/secondary-phone/' + clientId;
+
+        modal.style.display = 'block';
+    }
+
+    function closeModal() {
+        document.getElementById('secondaryModal').style.display = 'none';
+        currentClientId = null;
+    }
+
+    function deleteSecondary() {
+        if(currentClientId) {
+            window.location.href = '/clients/secondary-phone/delete/' + currentClientId;
+        }
+    }
+
+    // Автоформат основного номера
+    document.querySelectorAll('td span').forEach(function(span) {
+        let value = span.textContent.replace(/\D/g,'');
+        if(value.length === 11 && (value.startsWith('7') || value.startsWith('8'))) {
+            span.textContent = `+7 (${value.substring(1,4)}) ${value.substring(4,7)}-${value.substring(7,9)}-${value.substring(9,11)}`;
+        }
+    });
+
+    // Автоформат для поиска
     const searchInput = document.getElementById('searchPhone');
     const searchForm = document.getElementById('searchForm');
-
+    searchInput.addEventListener('input', () => {
+        let value = searchInput.value;
+        if (value.startsWith('+')) { value = '+' + value.substring(1).replace(/\D/g,''); }
+        else { value = value.replace(/\D/g,''); }
+        searchInput.value = value;
+    });
     searchForm.addEventListener('submit', () => {
         let digits = searchInput.value.replace(/\D/g,'');
         if(digits.length === 11 && digits.startsWith('8')){
@@ -48,6 +434,6 @@
         }
     });
 </script>
-
 </body>
 </html>
+
