@@ -1,70 +1,98 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <title>Главная страница</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #f5f5f5;
-      margin: 0;
-      padding: 0;
-    }
-
-    .container {
-      max-width: 600px;
-      margin: 80px auto;
-      padding: 30px;
-      background-color: #fff;
-      border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-      text-align: center;
-    }
-
-    h1 {
-      font-size: 24px;
-      margin-bottom: 40px;
-      color: #333;
-    }
-
-    .nav-list {
-      list-style: none;
-      padding: 0;
-      margin: 0;
-    }
-
-    .nav-list li {
-      margin: 15px 0;
-    }
-
-    .nav-list a {
-      display: inline-block;
-      text-decoration: none;
-      background-color: #007BFF; /* Синий цвет */
-      color: #fff;
-      padding: 15px 40px; /* одинаковый размер */
-      border-radius: 8px;
-      font-weight: bold;
-      font-size: 16px;
-      width: 220px; /* фиксированная ширина для всех кнопок */
-      text-align: center;
-      transition: background-color 0.3s;
-    }
-
-    .nav-list a:hover {
-      background-color: #0056b3; /* темно-синий при наведении */
-    }
-  </style>
+    <meta charset="UTF-8">
+    <title>ManyMilk - Главная</title>
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-<div class="container">
-  <h1>Панель управления клиентами "Много молока"</h1>
+<body class="bg-gray-50 min-h-screen flex flex-col">
 
-  <ul class="nav-list">
-    <li><a href="/clients">Список всех клиентов</a></li>
-    <li><a href="/clients/inactive">Неактивные клиенты</a></li>
-    <li><a href="/clients/add">Добавить нового клиента</a></li>
-  </ul>
-</div>
+<!-- Шапка -->
+<nav class="bg-white shadow-md p-4">
+    <div class="container mx-auto flex justify-between items-center">
+        <!-- Логотип с версией -->
+        <div class="flex items-center gap-1">
+            <!-- Текст логотипа -->
+            <span class="text-2xl font-bold text-blue-600 relative">
+                ManyMilk
+                <sup class="text-xs ml-1 align-super">v.1.0.0</sup>
+            </span>
+        </div>
+
+        <!-- Кнопка Главная -->
+        <a th:href="@{/}"
+           class="bg-blue-600 text-white px-3 py-1.5 rounded-md shadow hover:bg-blue-700 transition text-sm">
+            Главная
+        </a>
+    </div>
+</nav>
+
+<!-- Контент -->
+<main class="flex-grow container mx-auto px-4 py-12 text-center">
+    <h1 class="text-3xl font-bold text-gray-800 mb-4">Добро пожаловать в ManyMilk!</h1>
+    <p class="text-base text-gray-600 mb-8">Управляйте клиентами быстро и удобно.</p>
+
+    <div class="flex flex-wrap gap-3 justify-center">
+        <!-- Список клиентов -->
+        <a th:href="@{/clients}"
+           class="bg-blue-600 text-white px-3 py-2 rounded-md shadow hover:bg-blue-700 transition text-sm font-medium w-auto inline-block">
+            Список клиентов
+        </a>
+
+        <!-- Неактивные клиенты -->
+        <a th:href="@{/clients/inactive}"
+           class="bg-blue-600 text-white px-3 py-2 rounded-md shadow hover:bg-blue-700 transition text-sm font-medium w-auto inline-block">
+            Неактивные клиенты
+        </a>
+
+        <!-- Добавить клиента -->
+        <a th:href="@{/clients/add}"
+           class="bg-blue-600 text-white px-3 py-2 rounded-md shadow hover:bg-blue-700 transition text-sm font-medium w-auto inline-block">
+            Добавить клиента
+        </a>
+    </div>
+
+    <!-- Информация о клиентах -->
+    <div class="flex flex-wrap justify-center gap-6 text-sm mt-4">
+
+        <!-- Всего клиентов -->
+        <div class="flex items-center bg-blue-100 text-blue-700 px-4 py-3 rounded shadow-md min-w-[180px]">
+            <!-- Иконка -->
+            <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" stroke-width="2"
+                 viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                      d="M5.121 17.804A9 9 0 1112 21a9 9 0 01-6.879-3.196z"></path>
+            </svg>
+            <div>
+                <span class="font-semibold block">Всего клиентов</span>
+                <span th:text="${totalClients}" class="text-lg font-bold">0</span>
+            </div>
+        </div>
+
+        <!-- Неактивные клиенты -->
+        <div class="flex items-center bg-red-100 text-red-700 px-4 py-3 rounded shadow-md min-w-[180px]">
+            <!-- Иконка -->
+            <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" stroke-width="2"
+                 viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                      d="M18.364 5.636a9 9 0 11-12.728 12.728 9 9 0 0112.728-12.728z"></path>
+            </svg>
+            <div>
+                <span class="font-semibold block">Неактивные</span>
+                <span th:text="${inactiveClients}" class="text-lg font-bold">0</span>
+            </div>
+        </div>
+
+    </div>
+
+</main>
+
+<!-- Подвал -->
+<footer class="bg-white shadow-inner py-3 mt-12">
+    <div class="container mx-auto text-center text-gray-500 text-xs">
+        &copy; 2025 ManyMilk. Все права защищены.
+    </div>
+</footer>
+
 </body>
 </html>

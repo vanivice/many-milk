@@ -1,12 +1,19 @@
 package com.application.manymilk.model.db.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
+import lombok.*;
 
 import java.time.LocalDate;
 
 @Entity
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @Table(name = "clients")
 public class Client {
 
@@ -22,53 +29,16 @@ public class Client {
             message = "Телефон должен быть в формате +7 (999) 123-45-67")
     private String phoneNumber;
 
-    @Column(name = "lastOrderDate")
+    @Column(name = "secondary_phone_number")
+    private String secondaryPhoneNumber;
+
+    @Column(name = "last_order_date")
     private LocalDate lastOrderDate;
 
-    // Новое поле для Telegram
-    @Column(name = "telegramNick")
+    @Column(name = "telegram_nick")
     private String telegramNick;
 
-    //****
-    @Column(name = "secondaryPhoneNumber")
-    private String secondaryPhoneNumber;
-    //****
-
-    // Новое поле для WhatsApp
-    @Column(name = "whatsAppNick")
+    @Column(name = "whats_app_nick")
     private String whatsAppNick;
-
-    public Client() {}
-
-    public Client(String name, String phoneNumber, LocalDate lastOrderDate, String telegramNick, String whatsAppNick) {
-        this.name = name;
-        this.phoneNumber = phoneNumber;
-        this.lastOrderDate = lastOrderDate;
-        this.telegramNick = telegramNick;
-        this.whatsAppNick = whatsAppNick;
-    }
-
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
-
-    public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
-
-    public String getPhoneNumber() { return phoneNumber; }
-    public void setPhoneNumber(String phoneNumber) { this.phoneNumber = phoneNumber; }
-
-    public LocalDate getLastOrderDate() { return lastOrderDate; }
-    public void setLastOrderDate(LocalDate lastOrderDate) { this.lastOrderDate = lastOrderDate; }
-
-    //****
-    public String getSecondaryPhoneNumber() { return secondaryPhoneNumber; }
-    public void setSecondaryPhoneNumber(String secondaryPhoneNumber) { this.secondaryPhoneNumber = secondaryPhoneNumber; }
-    //****
-
-    public String getTelegramNick() { return telegramNick; }
-    public void setTelegramNick(String telegramNick) { this.telegramNick = telegramNick; }
-
-    public String getWhatsAppNick() { return whatsAppNick; }
-    public void setWhatsAppNick(String whatsAppNick) { this.whatsAppNick = whatsAppNick; }
 }
 

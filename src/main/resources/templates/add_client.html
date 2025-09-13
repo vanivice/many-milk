@@ -1,149 +1,98 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <title>Добавить клиента</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #f5f5f5;
-      margin: 0;
-      padding: 0;
-    }
-
-    .container {
-      max-width: 500px;
-      margin: 50px auto;
-      padding: 30px;
-      background-color: #fff;
-      border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    }
-
-    h2 {
-      text-align: center;
-      color: #333;
-      margin-bottom: 30px;
-    }
-
-    form div {
-      margin-bottom: 20px;
-      display: flex;
-      flex-direction: column;
-    }
-
-    label {
-      margin-bottom: 5px;
-      font-weight: bold;
-    }
-
-    input[type="text"],
-    input[type="date"] {
-      padding: 10px;
-      border-radius: 6px;
-      border: 1px solid #ccc;
-      font-size: 14px;
-    }
-
-    button[type="submit"] {
-      padding: 10px 20px;
-      background-color: #007BFF;
-      color: #fff;
-      border: none;
-      border-radius: 6px;
-      font-weight: bold;
-      cursor: pointer;
-      transition: background-color 0.3s;
-    }
-
-    button[type="submit"]:hover {
-      background-color: #0056b3;
-    }
-
-    .error-message {
-      color: red;
-      font-size: 13px;
-      margin-top: 5px;
-    }
-
-    .back-link {
-      display: block;
-      margin-top: 30px;
-      text-align: center;
-      text-decoration: none;
-      color: #007BFF;
-      font-weight: bold;
-    }
-
-    .back-link:hover {
-      color: #0056b3;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <title>Добавить клиента - ManyMilk</title>
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-<div class="container">
-  <h2>Добавить нового клиента</h2>
+<body class="bg-gray-100 min-h-screen flex flex-col">
 
-  <form th:action="@{/clients/add}" th:object="${client}" method="post">
-    <div>
-      <label>Имя:</label>
-      <input type="text" th:field="*{name}" required />
-      <div th:if="${#fields.hasErrors('name')}" th:errors="*{name}" class="error-message"></div>
+<!-- Main Content -->
+<main class="flex-grow flex justify-center items-center">
+    <div class="bg-white p-8 rounded shadow-md w-full max-w-md">
+
+        <form th:action="@{/clients/add}" th:object="${client}" method="post"
+              class="max-w-md mx-auto bg-white p-6 rounded shadow"
+              onsubmit="return validateClientForm()">
+            <h2 class="text-xl font-bold mb-4">Добавить нового клиента</h2>
+
+            <!-- Имя -->
+            <label class="block mb-2">Имя</label>
+            <input type="text" th:field="*{name}" placeholder="Имя" class="border p-2 w-full rounded mb-4" required />
+
+            <!-- Основной номер -->
+            <label class="block mb-2">Телефон</label>
+            <input type="text" th:field="*{phoneNumber}" placeholder="+7 (999) 123-45-67"
+                   class="border p-2 w-full rounded mb-4" required />
+
+            <!-- Дополнительный номер -->
+            <label class="block mb-2">Доп. номер</label>
+            <input type="text" th:field="*{secondaryPhoneNumber}" placeholder="+7 (999) 123-45-67"
+                   class="border p-2 w-full rounded mb-4" />
+
+            <!-- Ники Telegram/WhatsApp -->
+            <label class="block mb-2">Telegram</label>
+            <input type="text" th:field="*{telegramNick}" placeholder="Ник Telegram" class="border p-2 w-full rounded mb-4" />
+
+            <label class="block mb-2">WhatsApp</label>
+            <input type="text" th:field="*{whatsAppNick}" placeholder="Ник WhatsApp" class="border p-2 w-full rounded mb-4" />
+
+            <!-- Кнопка отправки -->
+            <div class="flex gap-2">
+                <a href="/"
+                   class="flex-1 bg-gray-500 text-white py-2 rounded hover:bg-gray-600 text-center">
+                    Отмена
+                </a>
+                <button type="submit" class="flex-1 bg-blue-500 text-white py-2 rounded hover:bg-blue-600">
+                    Сохранить
+                </button>
+            </div>
+        </form>
+
+        <script>
+            function formatPhoneInput(event) {
+                let input = event.target;
+                let digits = input.value.replace(/\D/g, '');
+
+                if (digits.startsWith('8')) digits = '7' + digits.slice(1);
+                if (!digits.startsWith('7')) digits = '7' + digits;
+
+                let formatted = '+7';
+                if (digits.length > 1) formatted += ' (' + digits.substring(1, Math.min(4, digits.length));
+                if (digits.length >= 4) formatted += ') ' + digits.substring(4, Math.min(7, digits.length));
+                if (digits.length >= 7) formatted += '-' + digits.substring(7, Math.min(9, digits.length));
+                if (digits.length >= 9) formatted += '-' + digits.substring(9, Math.min(11, digits.length));
+
+                input.value = formatted;
+            }
+
+            function validateClientForm() {
+                const phoneField = document.querySelector('input[name="phoneNumber"]');
+                if (!phoneField.value || phoneField.value.length < 16) {
+                    alert('Пожалуйста, введите корректный основной номер в формате +7 (XXX) XXX-XX-XX.');
+                    phoneField.focus();
+                    return false;
+                }
+
+                // Дополнительно можно проверить вторичный номер, если он заполнен
+                const secondaryField = document.querySelector('input[name="secondaryPhoneNumber"]');
+                if (secondaryField.value && secondaryField.value.length < 16) {
+                    alert('Пожалуйста, введите корректный дополнительный номер в формате +7 (XXX) XXX-XX-XX или оставьте поле пустым.');
+                    secondaryField.focus();
+                    return false;
+                }
+
+                // Подтверждение перед отправкой
+                return confirm('Вы уверены, что хотите сохранить этого клиента?');
+            }
+
+            document.addEventListener('DOMContentLoaded', () => {
+                const phoneFields = document.querySelectorAll('input[name="phoneNumber"], input[name="secondaryPhoneNumber"]');
+                phoneFields.forEach(field => field.addEventListener('input', formatPhoneInput));
+            });
+        </script>
     </div>
+</main>
 
-    <div>
-      <label>Телефон:</label>
-      <input type="text" id="phoneNumber" th:field="*{phoneNumber}" placeholder="Формат: +7 (ХХХ) ХХХ-ХХ-ХХ" required />
-      <div th:if="${#fields.hasErrors('phoneNumber')}" th:errors="*{phoneNumber}" class="error-message"></div>
-    </div>
-
-    <div>
-      <label>Telegram:</label>
-      <input type="text" th:field="*{telegramNick}" placeholder="Например: @my_telegram" />
-    </div>
-
-    <div>
-      <label>WhatsApp:</label>
-      <input type="text" th:field="*{whatsAppNick}" placeholder="Например: my_whatsapp" />
-    </div>
-
-    <div>
-      <label>Дата последнего заказа:</label>
-      <input type="date" th:field="*{lastOrderDate}" title="Можно оставить пустым" />
-      <div th:if="${#fields.hasErrors('lastOrderDate')}" th:errors="*{lastOrderDate}" class="error-message"></div>
-    </div>
-
-    <div>
-      <button type="submit">Добавить клиента</button>
-    </div>
-  </form>
-
-  <a href="/" class="back-link">← Главная</a>
-</div>
-
-<script>
-  const phoneInput = document.getElementById('phoneNumber');
-
-  // Разрешаем только цифры и "+" в начале
-  phoneInput.addEventListener('input', () => {
-    let value = phoneInput.value;
-    if (value.startsWith('+')) {
-      value = '+' + value.substring(1).replace(/\D/g,'');
-    } else {
-      value = value.replace(/\D/g,'');
-    }
-    phoneInput.value = value;
-  });
-
-  // Универсальное автоформатирование при потере фокуса
-  phoneInput.addEventListener('blur', () => {
-    let digits = phoneInput.value.replace(/\D/g, '');
-    if (digits.length === 11) {
-      if (digits.startsWith('8') || digits.startsWith('7')) {
-        phoneInput.value = `+7 (${digits.substring(1,4)}) ${digits.substring(4,7)}-${digits.substring(7,9)}-${digits.substring(9,11)}`;
-      }
-    }
-  });
-</script>
 </body>
 </html>
