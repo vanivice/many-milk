@@ -6,6 +6,7 @@ import com.application.manymilk.model.dto.response.ClientResponse;
 import com.application.manymilk.service.ClientService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -15,6 +16,7 @@ import java.util.Collections;
 import java.util.List;
 
 @Controller
+@Slf4j
 @RequestMapping("/clients")
 @RequiredArgsConstructor
 
@@ -41,10 +43,10 @@ public class ClientController {
         }
 
         // Проверка на валидный номер (только цифры, можно настроить под формат)
-        if (!phone.matches("\\d+")) {
+        if (!phone.matches("[\\d+()\\-\\s]+")) {
             model.addAttribute("clients", Collections.emptyList());
             model.addAttribute("notFoundMessagePhone", "Некорректный номер телефона");
-            return "clients";
+            return "inactive_clients";
         }
 
         // Поиск клиентов
@@ -64,26 +66,22 @@ public class ClientController {
     @GetMapping("/searchByNick")
     public String searchByNick(@RequestParam String nick, Model model) {
         List<ClientResponse> clients = clientService.searchClientsByNick(nick);
+
         if (clients.isEmpty()) {
             model.addAttribute("notFoundMessageNick", "Клиент с таким ником не найден");
         }
+
         model.addAttribute("clients", clients);
         return "clients";
     }
 
     @GetMapping("/inactive/searchByPhone")
     public String searchByPhoneInactive(@RequestParam String phone, Model model) {
+
         // Проверка на пустое поле
         if (phone == null || phone.trim().isEmpty()) {
             model.addAttribute("clients", Collections.emptyList());
             model.addAttribute("notFoundMessagePhone", "Пожалуйста, введите номер телефона");
-            return "inactive_clients";
-        }
-
-        // Проверка на валидный номер (только цифры, можно настроить под формат)
-        if (!phone.matches("\\d+")) {
-            model.addAttribute("clients", Collections.emptyList());
-            model.addAttribute("notFoundMessagePhone", "Некорректный номер телефона");
             return "inactive_clients";
         }
 
@@ -124,11 +122,21 @@ public class ClientController {
     @PostMapping("/add")
     public String addClient(@Valid @ModelAttribute("client") ClientRequest request,
                             BindingResult bindingResult, Model model) {
+
         if (bindingResult.hasErrors()) return "add_client";
 
-        clientService.createClient(request);
+        try {
+            clientService.createClient(request);
+
+        } catch (IllegalArgumentException e) {
+            // Если возникла ошибка, передаем сообщение во view
+            model.addAttribute("errorMessage", e.getMessage());
+            model.addAttribute("clientRequest", request); // чтобы форма не очищалась
+            return "add_client";
+        }
         return "redirect:/clients";
     }
+
 
     // Показ формы редактирования клиента
     @GetMapping("/edit/{id}")

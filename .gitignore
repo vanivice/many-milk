@@ -4,6 +4,9 @@ target/
 !**/src/main/**/target/
 !**/src/test/**/target/
 
+# Игнорировать H2 базу из ресурсов
+/src/main/resources/db/manymilk.mv.db
+
 ### STS ###
 .apt_generated
 .classpath

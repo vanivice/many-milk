@@ -1,0 +1,15 @@
+<configuration>
+
+    <!-- Кастомный консольный аппендер -->
+    <appender name="CUSTOM_CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>[%d{HH:mm:ss}] [%level] %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- Root logger использует только кастомный аппендер -->
+    <root level="INFO">
+        <appender-ref ref="CUSTOM_CONSOLE"/>
+    </root>
+
+</configuration>

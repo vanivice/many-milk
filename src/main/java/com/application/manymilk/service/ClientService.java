@@ -5,7 +5,6 @@ import com.application.manymilk.model.db.repository.ClientRepository;
 import com.application.manymilk.model.dto.request.ClientRequest;
 import com.application.manymilk.model.dto.response.ClientResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -34,15 +33,31 @@ public class ClientService {
 
     // Поиск клиентов по последним 4 цифрам телефона
     public List<ClientResponse> searchClientsByPhone(String phone) {
-        if (phone == null || phone.isEmpty()) {
+
+        if (phone == null || phone.trim().isEmpty()) {
             return getAllClients();
         }
 
-        String digitsInput = phone.replaceAll("\\D", "");
+        String input = phone.trim();
+
+        // убираем все нецифровые символы для сравнения последних цифр
+        String digitsInput = input.replaceAll("\\D", "");
         String last4 = digitsInput.length() >= 4
                 ? digitsInput.substring(digitsInput.length() - 4)
                 : digitsInput;
 
+        // ищем точное совпадение по формату
+        List<ClientResponse> exactMatches = clientRepository.findAll().stream()
+                .filter(c -> c.getPhoneNumber() != null &&
+                        c.getPhoneNumber().equals(input))
+                .map(ClientResponse::new)
+                .collect(Collectors.toList());
+
+        if (!exactMatches.isEmpty()) {
+            return exactMatches;
+        }
+
+        // Если точных совпадений нет — ищем по последним 4 цифрам
         return clientRepository.findAll().stream()
                 .filter(c -> c.getPhoneNumber() != null &&
                         c.getPhoneNumber().replaceAll("\\D", "").endsWith(last4))
@@ -64,8 +79,21 @@ public class ClientService {
 
     // Сохранение нового клиента из DTO
     public ClientResponse createClient(ClientRequest request) {
+        String phone = request.getPhoneNumber();
+
+        // Проверка на null/пустой
+        if (phone == null || phone.trim().isEmpty()) {
+            throw new IllegalArgumentException("Номер телефона не может быть пустым");
+        }
+
+        // Проверка уникальности
+        if (clientRepository.existsByPhoneNumber(phone)) {
+            throw new IllegalArgumentException("Клиент с таким номером телефона уже существует");
+        }
+
         Client client = new Client();
         fillClientFromRequest(client, request);
+
         return new ClientResponse(clientRepository.save(client));
     }
 
@@ -153,16 +181,30 @@ public class ClientService {
     }
 
     // --- Вспомогательный метод автоформата номера ---
+//    private String formatPhoneNumber(String phone) {
+//        if (phone == null) return null;
+//        String digits = phone.replaceAll("\\D", "");
+//        if (digits.length() == 11 && digits.startsWith("8")) {
+//            return String.format("+7 (%s) %s-%s-%s",
+//                    digits.substring(1, 4),
+//                    digits.substring(4, 7),
+//                    digits.substring(7, 9),
+//                    digits.substring(9, 11));
+//        }
+//        return phone;
+//    }
     private String formatPhoneNumber(String phone) {
-        if (phone == null) return null;
+        if (phone == null || phone.trim().isEmpty()) {
+            return null; // или возвращай старое значение
+        }
         String digits = phone.replaceAll("\\D", "");
-        if (digits.length() == 11 && digits.startsWith("8")) {
+        if (digits.length() == 11 && (digits.startsWith("7") || digits.startsWith("8"))) {
             return String.format("+7 (%s) %s-%s-%s",
                     digits.substring(1, 4),
                     digits.substring(4, 7),
                     digits.substring(7, 9),
                     digits.substring(9, 11));
         }
-        return phone;
+        throw new IllegalArgumentException("Неверный формат номера: " + phone);
     }
 }

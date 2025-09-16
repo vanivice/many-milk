@@ -25,6 +25,15 @@
 #        lob:
 #          non_contextual_creation: true
 
+logging:
+  level:
+    root: INFO
+    org.springframework.boot: OFF
+    org.hibernate: OFF
+    org.hibernate.SQL: OFF
+    org.hibernate.type: OFF
+    org.hibernate.tool.hbm2ddl: OFF
+
 spring:
   datasource:
     url: jdbc:h2:file:./data/manymilk   # база будет храниться в папке ./data
@@ -34,11 +43,15 @@ spring:
   jpa:
     hibernate:
       ddl-auto: update   # update = не удаляет данные, только обновляет структуру
-    show-sql: true
+    show-sql: false      # отключаем вывод SQL Hibernate
+    properties:
+      hibernate:
+        format_sql: false
   h2:
     console:
       enabled: true
       path: /h2-console   # веб-консоль по адресу http://localhost:8080/h2-console
+
   thymeleaf:
     cache: false
 

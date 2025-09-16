@@ -23,7 +23,9 @@
             <!-- Основной номер -->
             <label class="block mb-2">Телефон</label>
             <input type="text" th:field="*{phoneNumber}" placeholder="+7 (999) 123-45-67"
-                   class="border p-2 w-full rounded mb-4" required />
+                   class="border p-2 w-full rounded mb-1" required />
+            <!-- Сообщение об ошибке -->
+            <div th:if="${errorMessage}" class="text-red-500 text-sm mb-4" th:text="${errorMessage}"></div>
 
             <!-- Дополнительный номер -->
             <label class="block mb-2">Доп. номер</label>

@@ -15,6 +15,8 @@ public interface ClientRepository extends JpaRepository<Client, Long> {
 
     List<Client> findAllByOrderByIdAsc();
 
+    boolean existsByPhoneNumber(String phoneNumber);
+
     // Поиск по последним 4 цифрам номера телефона
     @Query("SELECT c FROM Client c WHERE FUNCTION('RIGHT', REPLACE(c.phoneNumber, '\\D',''), 4) = :lastDigits")
     List<Client> findByLast4Digits(@Param("lastDigits") String lastDigits);
