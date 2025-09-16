@@ -11,6 +11,7 @@ import java.util.List;
 
 @Repository
 public interface ClientRepository extends JpaRepository<Client, Long> {
+
     List<Client> findByLastOrderDateBefore(LocalDate date);
 
     List<Client> findAllByOrderByIdAsc();

@@ -12,8 +12,6 @@ import java.io.InputStream;
 @SpringBootApplication
 @Slf4j
 public class ManyMilkApplication {
-	private static final String DB_FOLDER = "./data";
-	private static final String DB_FILE = "manymilk.mv.db";
 
 	public static void main(String[] args) {
 
@@ -48,23 +46,43 @@ public class ManyMilkApplication {
 	// метод копировния бд
 	private static void copyDatabaseIfNotExists() {
 		try {
-			File folder = new File(DB_FOLDER);
+			// Папка data рядом с exe
+			File folder = new File(System.getProperty("user.dir"), "data");
 			if (!folder.exists()) folder.mkdirs();
 
-			File dbFile = new File(DB_FOLDER, DB_FILE);
+			// Файл базы в папке data
+			File dbFile = new File(folder, "manymilk.mv.db");
+
 			if (!dbFile.exists()) {
-				try (InputStream in = ManyMilkApplication.class.getResourceAsStream("/db/" + DB_FILE);
+				// Берем файл из ресурсов jar
+				try (InputStream in = ManyMilkApplication.class.getResourceAsStream("/db/manymilk.mv.db");
 					 FileOutputStream out = new FileOutputStream(dbFile)) {
+
+					if (in == null) {
+						log.info("=================================================================");
+						log.error("THE DATABASE FILE WAS NOT FOUND IN THE RESOURCES!");
+						log.info("=================================================================");
+						return;
+					}
+
 					byte[] buffer = new byte[8192];
 					int bytesRead;
 					while ((bytesRead = in.read(buffer)) != -1) {
 						out.write(buffer, 0, bytesRead);
 					}
-					log.info("THE DATABASE HAS BEEN SUCCESSFULLY COPIED: " + dbFile.getAbsolutePath());
+					log.info("=================================================================");
+					log.info("THE DATABASE HAS BEEN SUCCESSFULLY COPIED TO: " + dbFile.getAbsolutePath());
+					log.info("=================================================================");
 				}
+			} else {
+				log.info("=================================================================");
+				log.info("THE DATABASE ALREADY EXISTS: " + dbFile.getAbsolutePath());
+				log.info("=================================================================");
 			}
 		} catch (Exception e) {
+			log.info("=================================================================");
 			log.error("COULDN'T COPY THE DATABASE", e);
+			log.info("=================================================================");
 		}
 	}
 
@@ -84,10 +102,14 @@ public class ManyMilkApplication {
 			log.info("=================================================================");
 
 		} catch (InterruptedException e) {
+			log.info("=================================================================");
 			log.error("DELAY ERROR BEFORE OPENING THE BROWSER", e);
+			log.info("=================================================================");
 			Thread.currentThread().interrupt();
 		} catch (IOException e) {
+			log.info("=================================================================");
 			log.error("COULDN'T OPEN THE BROWSER AUTOMATICALLY", e);
+			log.info("=================================================================");
 		}
 	}
 }
