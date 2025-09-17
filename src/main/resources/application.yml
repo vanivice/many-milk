@@ -34,13 +34,13 @@ logging:
     org.hibernate.type: OFF
     org.hibernate.tool.hbm2ddl: OFF
 
-# server:
-# address: 0.0.0.0
-# port: 8080
-
 server:
-  server.address=0.0.0.0
-  server.port=${PORT:8080}
+ address: 0.0.0.0
+ port: 8080
+
+#server:
+#  server.address=0.0.0.0
+#  server.port=${PORT:8080}
 
 spring:
   datasource:

@@ -3,49 +3,54 @@
 <head>
     <meta charset="UTF-8">
     <title>Добавить клиента - ManyMilk</title>
+    <!-- Важный мета-тег для адаптивности -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-100 min-h-screen flex flex-col">
 
 <!-- Main Content -->
-<main class="flex-grow flex justify-center items-center">
-    <div class="bg-white p-8 rounded shadow-md w-full max-w-md">
+<main class="flex-grow flex justify-center items-center px-4 sm:px-0 py-6">
+    <div class="bg-white p-6 sm:p-8 rounded shadow-md w-full max-w-md">
 
         <form th:action="@{/clients/add}" th:object="${client}" method="post"
-              class="max-w-md mx-auto bg-white p-6 rounded shadow"
+              class="w-full"
               onsubmit="return validateClientForm()">
-            <h2 class="text-xl font-bold mb-4">Добавить нового клиента</h2>
+            <h2 class="text-xl sm:text-2xl font-bold mb-6 text-center">Добавить нового клиента</h2>
 
             <!-- Имя -->
             <label class="block mb-2">Имя</label>
-            <input type="text" th:field="*{name}" placeholder="Имя" class="border p-2 w-full rounded mb-4" required />
+            <input type="text" th:field="*{name}" placeholder="Имя"
+                   class="border p-3 w-full rounded mb-4 focus:outline-none focus:ring-2 focus:ring-blue-400" required />
 
             <!-- Основной номер -->
             <label class="block mb-2">Телефон</label>
             <input type="text" th:field="*{phoneNumber}" placeholder="+7 (999) 123-45-67"
-                   class="border p-2 w-full rounded mb-1" required />
-            <!-- Сообщение об ошибке -->
+                   class="border p-3 w-full rounded mb-1 focus:outline-none focus:ring-2 focus:ring-blue-400" required />
             <div th:if="${errorMessage}" class="text-red-500 text-sm mb-4" th:text="${errorMessage}"></div>
 
             <!-- Дополнительный номер -->
             <label class="block mb-2">Доп. номер</label>
             <input type="text" th:field="*{secondaryPhoneNumber}" placeholder="+7 (999) 123-45-67"
-                   class="border p-2 w-full rounded mb-4" />
+                   class="border p-3 w-full rounded mb-4 focus:outline-none focus:ring-2 focus:ring-blue-400" />
 
             <!-- Ники Telegram/WhatsApp -->
             <label class="block mb-2">Telegram</label>
-            <input type="text" th:field="*{telegramNick}" placeholder="Ник Telegram" class="border p-2 w-full rounded mb-4" />
+            <input type="text" th:field="*{telegramNick}" placeholder="Ник Telegram"
+                   class="border p-3 w-full rounded mb-4 focus:outline-none focus:ring-2 focus:ring-blue-400" />
 
             <label class="block mb-2">WhatsApp</label>
-            <input type="text" th:field="*{whatsAppNick}" placeholder="Ник WhatsApp" class="border p-2 w-full rounded mb-4" />
+            <input type="text" th:field="*{whatsAppNick}" placeholder="Ник WhatsApp"
+                   class="border p-3 w-full rounded mb-6 focus:outline-none focus:ring-2 focus:ring-blue-400" />
 
-            <!-- Кнопка отправки -->
-            <div class="flex gap-2">
+            <!-- Кнопки -->
+            <div class="flex flex-col sm:flex-row gap-3">
                 <a href="/"
-                   class="flex-1 bg-gray-500 text-white py-2 rounded hover:bg-gray-600 text-center">
+                   class="flex-1 bg-gray-500 text-white py-3 rounded hover:bg-gray-600 text-center">
                     Отмена
                 </a>
-                <button type="submit" class="flex-1 bg-blue-500 text-white py-2 rounded hover:bg-blue-600">
+                <button type="submit"
+                        class="flex-1 bg-blue-500 text-white py-3 rounded hover:bg-blue-600">
                     Сохранить
                 </button>
             </div>
@@ -76,7 +81,6 @@
                     return false;
                 }
 
-                // Дополнительно можно проверить вторичный номер, если он заполнен
                 const secondaryField = document.querySelector('input[name="secondaryPhoneNumber"]');
                 if (secondaryField.value && secondaryField.value.length < 16) {
                     alert('Пожалуйста, введите корректный дополнительный номер в формате +7 (XXX) XXX-XX-XX или оставьте поле пустым.');
@@ -84,7 +88,6 @@
                     return false;
                 }
 
-                // Подтверждение перед отправкой
                 return confirm('Вы уверены, что хотите сохранить этого клиента?');
             }
 

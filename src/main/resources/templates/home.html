@@ -2,6 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="ru">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- важно для мобильных -->
     <title>ManyMilk - Главная</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
@@ -12,14 +13,12 @@
     <div class="container mx-auto flex justify-between items-center">
         <!-- Логотип с версией -->
         <div class="flex items-center gap-1">
-            <!-- Текст логотипа -->
-            <span class="text-2xl font-bold text-blue-600 relative">
-                ManyMilk
-                <sup class="text-xs ml-1 align-super">v.1.0.0</sup>
-            </span>
+            <h1 class="text-2xl sm:text-3xl font-bold inline-flex items-center">
+                <span class="text-blue-600">Many</span>
+                <span class="bg-blue-600 text-white px-2 rounded-md ml-2">Milk</span>
+            </h1>
+            <sup class="text-xs ml-1 align-super">v.1.0.0</sup>
         </div>
-
-        <!-- Кнопка Главная -->
         <a th:href="@{/}"
            class="bg-blue-600 text-white px-3 py-1.5 rounded-md shadow hover:bg-blue-700 transition text-sm">
             Главная
@@ -28,36 +27,27 @@
 </nav>
 
 <!-- Контент -->
-<main class="flex-grow container mx-auto px-4 py-12 text-center">
-    <h1 class="text-3xl font-bold text-gray-800 mb-4">Добро пожаловать в ManyMilk!</h1>
-    <p class="text-base text-gray-600 mb-8">Управляйте клиентами быстро и удобно.</p>
+<main class="flex-grow container mx-auto px-4 py-8 text-center">
+    <h1 class="text-3xl sm:text-4xl font-bold text-gray-800 mb-4">Добро пожаловать в ManyMilk!</h1>
+    <p class="text-base sm:text-lg text-gray-600 mb-8">Управляй клиентами быстро и удобно.</p>
 
-    <div class="flex flex-wrap gap-3 justify-center">
-        <!-- Список клиентов -->
+    <div class="flex flex-wrap gap-3 justify-center mb-6">
         <a th:href="@{/clients}"
-           class="bg-blue-600 text-white px-3 py-2 rounded-md shadow hover:bg-blue-700 transition text-sm font-medium w-auto inline-block">
+           class="bg-blue-600 text-white px-4 py-2 rounded-md shadow hover:bg-blue-700 transition text-sm sm:text-base">
             Список клиентов
         </a>
-
-        <!-- Неактивные клиенты -->
         <a th:href="@{/clients/inactive}"
-           class="bg-blue-600 text-white px-3 py-2 rounded-md shadow hover:bg-blue-700 transition text-sm font-medium w-auto inline-block">
+           class="bg-blue-600 text-white px-4 py-2 rounded-md shadow hover:bg-blue-700 transition text-sm sm:text-base">
             Неактивные клиенты
         </a>
-
-        <!-- Добавить клиента -->
         <a th:href="@{/clients/add}"
-           class="bg-blue-600 text-white px-3 py-2 rounded-md shadow hover:bg-blue-700 transition text-sm font-medium w-auto inline-block">
+           class="bg-blue-600 text-white px-4 py-2 rounded-md shadow hover:bg-blue-700 transition text-sm sm:text-base">
             Добавить клиента
         </a>
     </div>
 
-    <!-- Информация о клиентах -->
-    <div class="flex flex-wrap justify-center gap-6 text-sm mt-4">
-
-        <!-- Всего клиентов -->
+    <div class="flex flex-col sm:flex-row flex-wrap justify-center gap-4 text-sm sm:text-base">
         <div class="flex items-center bg-blue-100 text-blue-700 px-4 py-3 rounded shadow-md min-w-[180px]">
-            <!-- Иконка -->
             <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" stroke-width="2"
                  viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                 <path stroke-linecap="round" stroke-linejoin="round"
@@ -69,9 +59,7 @@
             </div>
         </div>
 
-        <!-- Неактивные клиенты -->
         <div class="flex items-center bg-red-100 text-red-700 px-4 py-3 rounded shadow-md min-w-[180px]">
-            <!-- Иконка -->
             <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" stroke-width="2"
                  viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                 <path stroke-linecap="round" stroke-linejoin="round"
@@ -82,9 +70,7 @@
                 <span th:text="${inactiveClients}" class="text-lg font-bold">0</span>
             </div>
         </div>
-
     </div>
-
 </main>
 
 <!-- Подвал -->
