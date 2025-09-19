@@ -17,9 +17,11 @@ public class HomeController {
     public String home(Model model) {
         long totalClients = clientService.getAllClients().stream().count();
         long inactiveClients = clientService.getInactiveClients(30).stream().count();
+        long activeClients = totalClients - inactiveClients;
 
         model.addAttribute("totalClients", totalClients);
         model.addAttribute("inactiveClients", inactiveClients);
+        model.addAttribute("activeClients", activeClients);
 
         return "home";
     }

@@ -32,9 +32,10 @@ public class ClientController {
         return "clients";
     }
 
-    // Поиск клиентов по номеру
+    // Поиск клиентов по номеру в общем списке
     @GetMapping("/searchByPhone")
     public String searchByPhone(@RequestParam String phone, Model model) {
+
         // Проверка на пустое поле
         if (phone == null || phone.trim().isEmpty()) {
             model.addAttribute("clients", Collections.emptyList());
@@ -46,7 +47,7 @@ public class ClientController {
         if (!phone.matches("[\\d+()\\-\\s]+")) {
             model.addAttribute("clients", Collections.emptyList());
             model.addAttribute("notFoundMessagePhone", "Некорректный номер телефона");
-            return "inactive_clients";
+            return "clients";
         }
 
         // Поиск клиентов
@@ -58,57 +59,29 @@ public class ClientController {
             return "clients";
         }
 
+        model.addAttribute("searchType", "phone");
+        model.addAttribute("searchQuery", phone);
         model.addAttribute("clients", clients);
+
         return "clients";
     }
 
-    // Поиск клиентов по нику Telegram/WhatsApp
+    // Поиск клиентов по нику в общем списке
     @GetMapping("/searchByNick")
     public String searchByNick(@RequestParam String nick, Model model) {
+
         List<ClientResponse> clients = clientService.searchClientsByNick(nick);
 
         if (clients.isEmpty()) {
+            model.addAttribute("clients", Collections.emptyList());
             model.addAttribute("notFoundMessageNick", "Клиент с таким ником не найден");
         }
 
+        model.addAttribute("searchType", "nick");
+        model.addAttribute("searchQuery", nick);
         model.addAttribute("clients", clients);
+
         return "clients";
-    }
-
-    @GetMapping("/inactive/searchByPhone")
-    public String searchByPhoneInactive(@RequestParam String phone, Model model) {
-
-        // Проверка на пустое поле
-        if (phone == null || phone.trim().isEmpty()) {
-            model.addAttribute("clients", Collections.emptyList());
-            model.addAttribute("notFoundMessagePhone", "Пожалуйста, введите номер телефона");
-            return "inactive_clients";
-        }
-
-        // Поиск клиентов
-        List<ClientResponse> clients = clientService.searchClientsByPhone(phone);
-
-        if (clients.isEmpty()) {
-            model.addAttribute("clients", Collections.emptyList());
-            model.addAttribute("notFoundMessagePhone", "Клиент с таким номером не найден");
-            return "inactive_clients";
-        }
-
-        model.addAttribute("clients", clients);
-        return "inactive_clients";
-    }
-
-    // Поиск клиентов по нику Telegram/WhatsApp в неактивных
-    @GetMapping("/inactive/searchByNick")
-    public String searchByNickInactive(@RequestParam String nick, Model model) {
-        List<ClientResponse> clients = clientService.searchClientsByNick(nick);
-
-        if (clients.isEmpty()) {
-            model.addAttribute("notFoundMessageNick", "Клиент с таким ником не найден");
-        }
-
-        model.addAttribute("clients", clients);
-        return "inactive_clients";
     }
 
     // Показ формы добавления клиента
@@ -140,31 +113,52 @@ public class ClientController {
 
     // Показ формы редактирования клиента
     @GetMapping("/edit/{id}")
-    public String showEditForm(@PathVariable Long id, Model model) {
+    public String showEditForm(@PathVariable Long id,
+                               @RequestParam(required = false) String searchType,
+                               @RequestParam(required = false) String searchValue,
+                               Model model) {
         ClientResponse client = clientService.getClientById(id);
         if (client == null) {
             return "redirect:/clients";
         }
         model.addAttribute("client", client);
+        model.addAttribute("searchType", searchType);
+        model.addAttribute("searchQuery", searchValue);
         return "edit_client";
     }
+
 
     // Обновление клиента
     @PostMapping("/edit/{id}")
     public String updateClient(@PathVariable Long id,
                                @Valid @ModelAttribute("client") ClientRequest request,
+                               @RequestParam(required = false) String searchType,
+                               @RequestParam(required = false) String searchValue,
                                BindingResult bindingResult) {
         if (bindingResult.hasErrors()) return "edit_client";
 
         clientService.updateClient(id, request);
+
+        if ("nick".equals(searchType) && searchValue != null && !searchValue.isEmpty()) {
+            return "redirect:/clients/searchByNick?nick=" + searchValue;
+        } else if ("phone".equals(searchType) && searchValue != null && !searchValue.isEmpty()) {
+            return "redirect:/clients/searchByPhone?phone=" + searchValue;
+        }
+
         return "redirect:/clients";
     }
 
+
     // Удаление клиента
     @GetMapping("/delete/{id}")
-    public String deleteClient(@PathVariable Long id) {
+    public String deleteClient(@PathVariable Long id, @RequestParam(required = false) String from) {
         clientService.deleteClient(id);
-        return "redirect:/clients/inactive";
+
+        if ("inactive".equals(from)) {
+            return "redirect:/clients/inactive";
+        } else {
+            return "redirect:/clients";
+        }
     }
 
     // Отметка "сделал заказ сегодня"
@@ -186,15 +180,33 @@ public class ClientController {
     // Дополнительный номер - обновление
     @PostMapping("/secondary-phone/{id}")
     public String updateSecondaryPhone(@PathVariable Long id,
-                                       @RequestParam String secondaryPhoneNumber) {
+                                       @RequestParam String secondaryPhoneNumber,
+                                       @RequestParam(required = false) String searchType,
+                                       @RequestParam(required = false) String searchValue) {
         clientService.updateSecondaryPhone(id, secondaryPhoneNumber);
+
+        if ("nick".equals(searchType) && searchValue != null) {
+            return "redirect:/clients/searchByNick?nick=" + searchValue;
+        } else if ("phone".equals(searchType) && searchValue != null) {
+            return "redirect:/clients/searchByPhone?phone=" + searchValue;
+        }
+
         return "redirect:/clients";
     }
 
     // Дополнительный номер - удаление
     @GetMapping("/secondary-phone/delete/{id}")
-    public String deleteSecondaryPhone(@PathVariable Long id) {
+    public String deleteSecondaryPhone(@PathVariable Long id,
+                                       @RequestParam(required = false) String searchType,
+                                       @RequestParam(required = false) String searchValue) {
         clientService.deleteSecondaryPhone(id);
+
+        if ("nick".equals(searchType) && searchValue != null) {
+            return "redirect:/clients/searchByNick?nick=" + searchValue;
+        } else if ("phone".equals(searchType) && searchValue != null) {
+            return "redirect:/clients/searchByPhone?phone=" + searchValue;
+        }
+
         return "redirect:/clients";
     }
 }

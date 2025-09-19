@@ -1,16 +1,18 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html xmlns:th="http://www.thymeleaf.org" lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Неактивные клиенты - ManyMilk</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- важно для мобильных -->
+    <title>ManyMilk - Главная</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
 </head>
-<body class="bg-gray-100 min-h-screen">
+<body class="bg-gray-50 min-h-screen flex flex-col">
 
 <!-- Шапка -->
-<nav class="bg-white shadow-md p-4 overflow-x-auto">
-    <div class="min-w-[320px] flex justify-between items-center">
+<nav class="bg-white shadow-md p-4">
+    <div class="container mx-auto flex justify-between items-center">
+        <!-- Логотип с версией -->
         <div class="flex items-center gap-1">
             <h1 class="text-2xl sm:text-3xl font-bold inline-flex items-center">
                 <span class="text-blue-600">Many</span>
@@ -18,7 +20,8 @@
             </h1>
             <sup class="text-xs ml-1 align-super">v.1.0.0</sup>
         </div>
-        <a th:href="@{/}" class="bg-blue-600 text-white px-3 py-1.5 rounded-md shadow hover:bg-blue-700 transition text-sm">
+        <a th:href="@{/}"
+           class="bg-blue-600 text-white px-3 py-1.5 rounded-md shadow hover:bg-blue-700 transition text-sm">
             Главная
         </a>
     </div>
@@ -28,89 +31,48 @@
 <main class="p-6">
     <h2 class="text-xl font-semibold mb-4">Неактивные клиенты</h2>
 
-    <!-- Поиск -->
-    <div class="mb-4 flex flex-wrap gap-2 items-start">
-        <div class="flex flex-col">
-            <form th:action="@{/clients/inactive/searchByPhone}" method="get" class="flex gap-2 flex-wrap" onsubmit="return validatePhoneSearch(this)">
-                <input id="phoneInput" type="text" name="phone" placeholder="Поиск по номеру" class="border p-2 rounded flex-grow" oninput="clearMessage('phoneMessage')" />
-                <button type="submit" class="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600">Поиск</button>
-            </form>
-            <div id="phoneMessage" th:text="${notFoundMessagePhone}" class="text-red-500 text-sm font-semibold mt-1"></div>
-        </div>
+    <!-- Список неактивных клиентов -->
+    <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div th:each="client : ${clients}" class="bg-white rounded-lg shadow p-4 flex flex-col justify-between hover:shadow-lg transition">
+            <!-- Заголовок -->
+            <div class="flex justify-between items-center mb-2">
+                <h3 class="text-lg font-bold truncate" th:text="${client.name}" th:title="${client.name}">Имя</h3>
+                <span class="text-gray-500 text-sm">ID: <span th:text="${client.id}"></span></span>
+            </div>
 
-        <div class="flex flex-col">
-            <form th:action="@{/clients/inactive/searchByNick}" method="get" class="flex gap-2 flex-wrap" onsubmit="return validateNickSearch(this)">
-                <input id="nickInput" type="text" name="nick" placeholder="Поиск по нику" class="border p-2 rounded flex-grow" oninput="clearMessage('nickMessage')" />
-                <button type="submit" class="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600">Поиск</button>
-            </form>
-            <div id="nickMessage" th:text="${notFoundMessageNick}" class="text-red-500 text-sm font-semibold mt-1"></div>
+            <!-- Телефон -->
+            <div class="mb-2">
+                <p class="text-sm font-bold text-gray-700 truncate" th:text="${client.phoneNumber}" th:title="${client.phoneNumber}"></p>
+            </div>
+
+            <!-- Соцсети -->
+            <div class="mb-2 text-sm text-gray-700">
+                <p><span class="font-semibold">Telegram:</span> <span th:text="${client.telegramNick}"></span></p>
+                <p><span class="font-semibold">WhatsApp:</span> <span th:text="${client.whatsAppNick}"></span></p>
+            </div>
+
+            <!-- Дата заказа -->
+            <p class="text-sm text-gray-500 mb-3">Последний заказ: <span th:text="${client.lastOrderDate}"></span></p>
+
+            <!-- Действия: Сделал заказ и Удалить -->
+            <div class="flex justify-center gap-2 mt-auto">
+                <form th:action="@{/clients/order-today/{id}(id=${client.id})}" method="post">
+                    <button type="submit"
+                            class="flex items-center gap-1 bg-green-400 text-white px-3 py-1.5 rounded hover:bg-green-500 text-xs whitespace-nowrap">
+                        <i data-lucide="check-circle" class="w-4 h-4"></i>
+                        Сделал заказ
+                    </button>
+                </form>
+                <a th:href="@{/clients/delete/{id}(id=${client.id}, from='inactive')}"
+                   class="flex items-center gap-1 bg-red-400 text-white px-3 py-1.5 rounded hover:bg-red-500 text-xs whitespace-nowrap"
+                   onclick="return confirm('Вы уверены, что хотите удалить этого клиента?');">
+                    <i data-lucide="trash-2" class="w-4 h-4"></i>
+                    Удалить
+                </a>
+            </div>
         </div>
     </div>
 
-    <script>
-        function validatePhoneSearch(form) {
-            if (!form.phone.value.trim()) {
-                alert("Поле поиска по номеру не должно быть пустым!");
-                return false;
-            }
-            return true;
-        }
-
-        function validateNickSearch(form) {
-            if (!form.nick.value.trim()) {
-                alert("Поле поиска по нику не должно быть пустым!");
-                return false;
-            }
-            return true;
-        }
-    </script>
-
-    <!-- Таблица неактивных клиентов -->
-    <div class="overflow-auto" style="max-width: 100vw;">
-        <table class="min-w-full bg-white rounded shadow overflow-hidden">
-            <thead class="bg-gray-200">
-            <tr>
-                <th class="px-4 py-2 border-r">ID</th>
-                <th class="px-4 py-2 border-r">Имя</th>
-                <th class="px-4 py-2 border-r">Телефон</th>
-                <th class="px-4 py-2 border-r">Telegram</th>
-                <th class="px-4 py-2 border-r">WhatsApp</th>
-                <th class="px-4 py-2 border-r">Последний заказ</th>
-                <th class="px-4 py-2">Действия</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr th:each="client : ${clients}" class="border-b hover:bg-gray-50">
-                <td class="px-4 py-2 border-r" th:text="${client.id}"></td>
-                <td class="px-4 py-2 border-r truncate max-w-[150px]" th:text="${client.name}"></td>
-                <td class="px-4 py-2 border-r">
-                    <div class="flex flex-col gap-1 min-w-0">
-                        <span class="truncate" th:text="${client.phoneNumber}" th:title="${client.phoneNumber}"></span>
-                        <!-- Доп. кнопка под номером (если нужна) -->
-                        <!-- <button type="button" class="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600 w-max">Доп. номер</button> -->
-                    </div>
-                </td>
-                <td class="px-4 py-2 border-r truncate max-w-[150px]" th:text="${client.telegramNick}"></td>
-                <td class="px-4 py-2 border-r truncate max-w-[150px]" th:text="${client.whatsAppNick}"></td>
-                <td class="px-4 py-2 border-r w-[60px] truncate overflow-hidden whitespace-nowrap" th:text="${client.lastOrderDate}" th:title="${client.lastOrderDate}"></td>
-                <td class="px-4 py-2">
-                    <div class="flex gap-1 flex-wrap">
-                        <form th:action="@{/clients/order-today/{id}(id=${client.id})}" method="post">
-                            <button type="submit" class="bg-green-500 text-white px-2 py-1 rounded hover:bg-green-600 inline-block min-w-[130px] text-center whitespace-nowrap">
-                                Сделал заказ
-                            </button>
-                        </form>
-                        <a th:href="@{/clients/delete/{id}(id=${client.id})}"
-                           class="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600 inline-block min-w-[130px] text-center whitespace-nowrap"
-                           onclick="return confirm('Вы уверены, что хотите удалить этого клиента?');">
-                            Удалить
-                        </a>
-                    </div>
-                </td>
-            </tr>
-            </tbody>
-        </table>
-    </div>
 </main>
 
 <script>
@@ -153,6 +115,10 @@
             }
         }
     });
+</script>
+
+<script>
+    lucide.createIcons();
 </script>
 
 </body>
