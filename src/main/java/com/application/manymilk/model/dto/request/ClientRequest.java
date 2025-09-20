@@ -11,7 +11,7 @@ public class ClientRequest {
 
     private String name;
     private String phoneNumber;
-    private String secondaryPhoneNumber;
+    private String additionally;
     private String telegramNick;
     private String whatsAppNick;
     private String lastOrderDate;

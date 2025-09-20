@@ -179,11 +179,11 @@ public class ClientController {
 
     // Дополнительный номер - обновление
     @PostMapping("/secondary-phone/{id}")
-    public String updateSecondaryPhone(@PathVariable Long id,
-                                       @RequestParam String secondaryPhoneNumber,
+    public String updateAdditionally(@PathVariable Long id,
+                                       @RequestParam String additionally,
                                        @RequestParam(required = false) String searchType,
                                        @RequestParam(required = false) String searchValue) {
-        clientService.updateSecondaryPhone(id, secondaryPhoneNumber);
+        clientService.updateAdditionally(id, additionally);
 
         if ("nick".equals(searchType) && searchValue != null) {
             return "redirect:/clients/searchByNick?nick=" + searchValue;
@@ -196,10 +196,10 @@ public class ClientController {
 
     // Дополнительный номер - удаление
     @GetMapping("/secondary-phone/delete/{id}")
-    public String deleteSecondaryPhone(@PathVariable Long id,
+    public String deleteAdditionally(@PathVariable Long id,
                                        @RequestParam(required = false) String searchType,
                                        @RequestParam(required = false) String searchValue) {
-        clientService.deleteSecondaryPhone(id);
+        clientService.deleteAdditionally(id);
 
         if ("nick".equals(searchType) && searchValue != null) {
             return "redirect:/clients/searchByNick?nick=" + searchValue;

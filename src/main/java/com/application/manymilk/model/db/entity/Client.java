@@ -34,7 +34,7 @@ public class Client {
     private String phoneNumber;
 
     @Column(name = "secondary_phone_number")
-    private String secondaryPhoneNumber;
+    private String additionally;
 
     @Column(name = "last_order_date")
     private LocalDate lastOrderDate;

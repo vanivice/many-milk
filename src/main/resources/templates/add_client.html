@@ -30,8 +30,8 @@
             <div th:if="${errorMessage}" class="text-red-500 text-sm mb-4" th:text="${errorMessage}"></div>
 
             <!-- Дополнительный номер -->
-            <label class="block mb-2">Доп. номер</label>
-            <input type="text" th:field="*{secondaryPhoneNumber}" placeholder="+7 (999) 123-45-67"
+            <label class="block mb-2">Доп. информация</label>
+            <input type="text" th:field="*{additionally}"
                    class="border p-3 w-full rounded mb-4 focus:outline-none focus:ring-2 focus:ring-blue-400" />
 
             <!-- Ники Telegram/WhatsApp -->
@@ -78,13 +78,6 @@
                 if (!phoneField.value || phoneField.value.length < 16) {
                     alert('Пожалуйста, введите корректный основной номер в формате +7 (XXX) XXX-XX-XX.');
                     phoneField.focus();
-                    return false;
-                }
-
-                const secondaryField = document.querySelector('input[name="secondaryPhoneNumber"]');
-                if (secondaryField.value && secondaryField.value.length < 16) {
-                    alert('Пожалуйста, введите корректный дополнительный номер в формате +7 (XXX) XXX-XX-XX или оставьте поле пустым.');
-                    secondaryField.focus();
                     return false;
                 }
 

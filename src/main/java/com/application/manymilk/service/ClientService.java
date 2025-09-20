@@ -132,11 +132,11 @@ public class ClientService {
     }
 
     // Обновление дополнительного номера
-    public void updateSecondaryPhone(Long id, String secondaryPhoneNumber) {
+    public void updateAdditionally(Long id, String additionally) {
         clientRepository.findById(id).ifPresent(client -> {
-            client.setSecondaryPhoneNumber(
-                    secondaryPhoneNumber != null && !secondaryPhoneNumber.trim().isEmpty()
-                            ? secondaryPhoneNumber.trim()
+            client.setAdditionally(
+                    additionally != null && !additionally.trim().isEmpty()
+                            ? additionally.trim()
                             : null
             );
             clientRepository.save(client);
@@ -144,9 +144,9 @@ public class ClientService {
     }
 
     // Удаление дополнительного номера
-    public void deleteSecondaryPhone(Long id) {
+    public void deleteAdditionally(Long id) {
         clientRepository.findById(id).ifPresent(client -> {
-            client.setSecondaryPhoneNumber(null);
+            client.setAdditionally(null);
             clientRepository.save(client);
         });
     }
@@ -160,9 +160,9 @@ public class ClientService {
     private void fillClientFromRequest(Client client, ClientRequest request) {
         client.setName(request.getName());
         client.setPhoneNumber(formatPhoneNumber(request.getPhoneNumber()));
-        client.setSecondaryPhoneNumber(
-                request.getSecondaryPhoneNumber() != null && !request.getSecondaryPhoneNumber().trim().isEmpty()
-                        ? request.getSecondaryPhoneNumber().trim()
+        client.setAdditionally(
+                request.getAdditionally() != null && !request.getAdditionally().trim().isEmpty()
+                        ? request.getAdditionally().trim()
                         : null
         );
         client.setTelegramNick(
@@ -180,19 +180,6 @@ public class ClientService {
         }
     }
 
-    // --- Вспомогательный метод автоформата номера ---
-//    private String formatPhoneNumber(String phone) {
-//        if (phone == null) return null;
-//        String digits = phone.replaceAll("\\D", "");
-//        if (digits.length() == 11 && digits.startsWith("8")) {
-//            return String.format("+7 (%s) %s-%s-%s",
-//                    digits.substring(1, 4),
-//                    digits.substring(4, 7),
-//                    digits.substring(7, 9),
-//                    digits.substring(9, 11));
-//        }
-//        return phone;
-//    }
     private String formatPhoneNumber(String phone) {
         if (phone == null || phone.trim().isEmpty()) {
             return null; // или возвращай старое значение

@@ -76,7 +76,7 @@
                 }
             }
             document.addEventListener('DOMContentLoaded', () => {
-                const phoneFields = document.querySelectorAll('input[name="phoneNumber"], input[name="secondaryPhoneNumber"]');
+                const phoneFields = document.querySelectorAll('input[name="phoneNumber"], input[name="additionally"]');
                 phoneFields.forEach(field => field.addEventListener('input', formatPhoneInput));
             });
         </script>
