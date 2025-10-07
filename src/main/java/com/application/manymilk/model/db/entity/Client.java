@@ -33,7 +33,7 @@ public class Client {
     @Column(name = "phone_number", unique = true)
     private String phoneNumber;
 
-    @Column(name = "secondary_phone_number")
+    @Column(name = "additionally")
     private String additionally;
 
     @Column(name = "last_order_date")

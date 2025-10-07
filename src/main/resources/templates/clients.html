@@ -10,7 +10,7 @@
 <body class="bg-gray-50 min-h-screen flex flex-col">
 
 <!-- Шапка -->
-<nav class="bg-white shadow-md p-4">
+<nav class="bg-white shadow-md p-4 w-full fixed top-0 left-0 z-50">
     <div class="container mx-auto flex justify-between items-center">
         <!-- Логотип с версией -->
         <div class="flex items-center gap-1">
@@ -28,7 +28,7 @@
 </nav>
 
 <!-- Main Content -->
-<main class="p-6 container mx-auto">
+<main class="p-6 container mx-auto mt-20">
 
     <h2 class="text-xl font-semibold mb-4">Список клиентов</h2>
 
@@ -94,7 +94,7 @@
                 <a th:href="@{/clients/edit/{id}(id=${client.id}, searchType=${searchType}, searchValue=${searchQuery})}"
                    class="flex items-center gap-1 bg-blue-400 text-white px-3 py-1.5 rounded hover:bg-blue-500 text-xs whitespace-nowrap">
                     <i data-lucide="edit" class="w-4 h-4"></i>
-                    Редактировать
+                    Изменить
                 </a>
 
                 <!-- Удалить -->
@@ -108,14 +108,92 @@
             <!-- Кнопка "Назад" под карточками, видна только если выполнялся поиск -->
             <div class="mt-4 flex justify-center" th:if="${searchType != null}">
                 <a th:href="@{/clients}"
-                   class="flex items-center gap-1 bg-gray-400 text-white px-3 py-1.5 rounded hover:bg-gray-500 text-sm shadow">
+                   class="flex items-center gap-1 bg-gray-400 text-white px-3 py-1.5 rounded hover:bg-gray-500 text-xs shadow">
                     <i data-lucide="arrow-left" class="w-4 h-4"></i>
                     К списку клиентов
                 </a>
             </div>
-
         </div>
     </div>
+
+    <div class="flex justify-center mt-6" th:if="${!isSearch}">
+
+        <!-- Мобильная версия -->
+        <ul class="flex gap-2 sm:hidden">
+            <!-- Кнопка на первую страницу -->
+            <li th:if="${clients.totalPages > 0 && clients.number > 0}">
+                <a th:href="|${baseUrl}?page=0|"
+                   class="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300">&laquo;&laquo;</a>
+            </li>
+
+            <!-- Назад -->
+            <li th:if="${clients.hasPrevious()}">
+                <a th:href="|${baseUrl}?page=${clients.number - 1}|"
+                   class="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300">&laquo;</a>
+            </li>
+
+            <!-- Текущая страница -->
+            <li class="px-3 py-1 bg-blue-500 text-white font-bold rounded">
+                <span th:text="${clients.number + 1}"></span>
+            </li>
+
+            <!-- Вперёд -->
+            <li th:if="${clients.hasNext()}">
+                <a th:href="|${baseUrl}?page=${clients.number + 1}|"
+                   class="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300">&raquo;</a>
+            </li>
+
+            <!-- Кнопка на последнюю страницу -->
+            <li th:if="${clients.totalPages > 0 && clients.number < clients.totalPages - 1}">
+                <a th:href="|${baseUrl}?page=${clients.totalPages - 1}|"
+                   class="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300">&raquo;&raquo;</a>
+            </li>
+        </ul>
+
+        <!-- Десктопная версия -->
+        <ul class="hidden sm:inline-flex -space-x-px"
+            th:with="start=${clients.number - 1 > 1} ? ${clients.number - 1} : 1,
+                 end=${clients.number + 1 < clients.totalPages - 2} ? ${clients.number + 1} : ${clients.totalPages - 2}">
+
+            <!-- Назад -->
+            <li th:if="${clients.hasPrevious()}" class="px-3 py-1 bg-gray-200 rounded-l">
+                <a th:href="|${baseUrl}?page=${clients.number - 1}|" class="hover:underline">&laquo; Назад</a>
+            </li>
+
+            <!-- Первая страница -->
+            <li class="px-3 py-1 bg-gray-100 hover:bg-gray-200"
+                th:classappend="${clients.number == 0} ? ' bg-blue-500 text-white font-bold' : ''">
+                <a th:href="|${baseUrl}?page=0|">1</a>
+            </li>
+
+            <!-- Эллипс слева -->
+            <li th:if="${start > 1}" class="px-3 py-1 bg-gray-100">...</li>
+
+            <!-- Текущая ±1 страница -->
+            <li th:each="i : ${#numbers.sequence(start, end)}"
+                class="px-3 py-1 bg-gray-100 hover:bg-gray-200"
+                th:classappend="${i == clients.number} ? ' bg-blue-500 text-white font-bold' : ''">
+                <a th:href="|${baseUrl}?page=${i}|" th:text="${i + 1}"></a>
+            </li>
+
+            <!-- Эллипс справа -->
+            <li th:if="${end < clients.totalPages - 2}" class="px-3 py-1 bg-gray-100">...</li>
+
+            <!-- Последняя страница -->
+            <li class="px-3 py-1 bg-gray-100 hover:bg-gray-200"
+                th:classappend="${clients.number == clients.totalPages - 1} ? ' bg-blue-500 text-white font-bold' : ''">
+                <a th:href="|${baseUrl}?page=${clients.totalPages - 1}|"
+                   th:text="${clients.totalPages}"></a>
+            </li>
+
+            <!-- Вперёд -->
+            <li th:if="${clients.hasNext()}" class="px-3 py-1 bg-gray-200 rounded-r">
+                <a th:href="|${baseUrl}?page=${clients.number + 1}|" class="hover:underline">Вперёд &raquo;</a>
+            </li>
+        </ul>
+
+    </div>
+
 </main>
 
 <!-- Модальное окно -->
@@ -128,7 +206,7 @@
             <input type="hidden" name="searchValue" th:value="${searchQuery} ?: ''">
 
             <!-- Поле с переносом текста -->
-            <textarea name="secondaryPhoneNumber" id="modalSecondaryNumber"
+            <textarea name="additionally" id="modalSecondaryNumber"
                       class="border p-2 w-full rounded mb-4 resize-none"
                       placeholder="Доп. информация" rows="3"></textarea>
             <div class="flex justify-between gap-2">
@@ -180,23 +258,6 @@
 </script>
 
 <script>
-    const pageScrollKey = 'page_scroll_' + window.location.pathname;
-
-    // Сохраняем вертикальный скролл страницы
-    window.addEventListener('scroll', () => {
-        sessionStorage.setItem(pageScrollKey, window.scrollY);
-    });
-
-    // Восстанавливаем скролл после загрузки
-    window.addEventListener('load', () => {
-        const pageScrollY = sessionStorage.getItem(pageScrollKey);
-        if (pageScrollY) {
-            requestAnimationFrame(() => window.scrollTo(0, parseInt(pageScrollY)));
-        }
-    });
-</script>
-
-<script>
     function validatePhoneSearch(form) {
         if (!form.phone.value.trim()) {
             alert("Поле поиска по номеру не должно быть пустым!");
@@ -211,6 +272,70 @@
             return false;
         }
         return true;
+    }
+</script>
+
+<script>
+    const pageKey = 'current_clients_page';
+    const scrollKey = 'page_scroll_' + window.location.pathname;
+
+    // ===== Сохраняем страницу и скролл при клике на пагинацию =====
+    document.addEventListener('click', (e) => {
+        const link = e.target.closest('a[href*="?page="]');
+        if (link) {
+            const url = new URL(link.href, window.location.origin);
+            const page = url.searchParams.get('page');
+            if (page !== null) {
+                sessionStorage.setItem(pageKey, page);
+                // При переходе на другую страницу скролим наверх
+                sessionStorage.setItem(scrollKey, 0);
+            }
+        }
+    });
+
+    // ===== Восстанавливаем страницу и скролл =====
+    window.addEventListener('load', () => {
+        const savedPage = sessionStorage.getItem(pageKey);
+        const savedScroll = sessionStorage.getItem(scrollKey);
+        const url = new URL(window.location.href);
+        const currentPage = url.searchParams.get('page');
+
+        // Если есть сохранённая страница, но текущая URL без ?page → возвращаемся
+        if (savedPage !== null && currentPage === null) {
+            url.searchParams.set('page', savedPage);
+            window.location.replace(url.toString());
+            return; // страница перезагрузится и дальше скрипт не выполнится
+        }
+
+        // Восстанавливаем скролл только если не сброшен (0)
+        if (savedScroll && savedScroll !== '0') {
+            requestAnimationFrame(() => window.scrollTo(0, parseInt(savedScroll)));
+        }
+
+        // ===== Сбрасываем скролл и страницу при переходе на главную =====
+        document.querySelectorAll('a[href="/"]').forEach(link => {
+            link.addEventListener('click', () => {
+                sessionStorage.removeItem(scrollKey);
+                sessionStorage.removeItem(pageKey);
+                window.scrollTo(0, 0);
+            });
+        });
+
+        // Сбрасываем скролл и страницу при свайпе назад (popstate)
+        window.addEventListener('popstate', () => {
+            if (window.location.pathname === '/') {
+                sessionStorage.removeItem(scrollKey);
+                sessionStorage.removeItem(pageKey);
+                window.scrollTo(0, 0);
+            }
+        });
+    });
+
+    // ===== Сохраняем скролл при прокрутке (не главная) =====
+    if (window.location.pathname !== '/') {
+        window.addEventListener('scroll', () => {
+            sessionStorage.setItem(scrollKey, window.scrollY);
+        });
     }
 </script>
 

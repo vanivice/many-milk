@@ -2,34 +2,39 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="ru">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- важно для мобильных -->
-  <title>Вход в ManyMilk CRM</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ManyMilk CRM</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="flex items-center justify-center h-screen bg-gray-100">
+<body class="flex items-center justify-center min-h-screen bg-gray-100">
 
-<div class="bg-white p-8 rounded-xl shadow-md w-96">
-  <h1 class="text-2xl font-bold text-center mb-6 text-blue-600">ManyMilk CRM</h1>
+<!-- Центрированный вертикальный контейнер -->
+<div class="flex flex-col items-center w-full max-w-sm space-y-8">
 
-  <form th:action="@{/login}" method="post" class="space-y-4">
-    <div>
-      <label class="block text-sm font-medium">Логин</label>
-      <input type="text" name="username"
-             class="w-full border rounded px-3 py-2 mt-1 focus:ring-2 focus:ring-blue-500"/>
-    </div>
-    <div>
-      <label class="block text-sm font-medium">Пароль</label>
-      <input type="password" name="password"
-             class="w-full border rounded px-3 py-2 mt-1 focus:ring-2 focus:ring-blue-500"/>
-    </div>
-    <button type="submit"
-            class="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition">
-      Войти
-    </button>
-  </form>
+  <!-- Форма входа -->
+  <div class="bg-white w-full p-6 rounded-xl shadow-md">
+    <h1 class="text-2xl font-bold text-center mb-6 text-blue-600">ManyMilk CRM</h1>
+    <form th:action="@{/login}" method="post" class="space-y-4">
+      <input type="text" name="username" placeholder="Логин"
+             class="w-full border border-gray-300 rounded px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"/>
+      <input type="password" name="password" placeholder="Пароль"
+             class="w-full border border-gray-300 rounded px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"/>
+      <button type="submit"
+              class="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition">
+        Войти
+      </button>
+    </form>
+    <div th:if="${param.error}" class="text-red-500 text-sm mt-2 text-center">Неверный логин или пароль</div>
+    <div th:if="${param.logout}" class="text-green-500 text-sm mt-2 text-center">Вы вышли из системы</div>
+  </div>
 
-  <div th:if="${param.error}" class="text-red-500 text-sm mt-3">Неверный логин или пароль</div>
-  <div th:if="${param.logout}" class="text-green-500 text-sm mt-3">Вы вышли из системы</div>
+  <!-- QR-код под формой -->
+  <div class="bg-white w-full p-6 rounded-xl shadow-md text-center hidden sm:block">
+    <p class="mb-4 text-gray-700 font-medium">Сканируйте QR-код для входа на телефоне:</p>
+    <img src="/qr" alt="QR-код с адресом сервера"
+         class="mx-auto w-48 h-48 border rounded-lg p-2"/>
+  </div>
+
 </div>
 
 </body>

@@ -1,5 +1,6 @@
 package com.application.manymilk.config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
@@ -17,13 +18,19 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableWebSecurity
 public class SecurityConfig {
 
+    @Value("${admin.username}")
+    private String adminUsername;
+
+    @Value("${admin.password}")
+    private String adminPassword;
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         // логин и статика должны быть доступны всем, иначе фронт не загрузится
-                        .requestMatchers("/login", "/css/**", "/js/**", "/images/**").permitAll()
+                        .requestMatchers("/login", "/qr", "/css/**", "/js/**", "/images/**").permitAll()
                         // всё остальное только для роли ADMIN
                         .anyRequest().hasRole("ADMIN")
                 )
@@ -43,8 +50,8 @@ public class SecurityConfig {
 
     @Bean
     public UserDetailsService userDetailsService(PasswordEncoder encoder) {
-        UserDetails admin = User.withUsername("admin")
-                .password(encoder.encode("admin"))
+        UserDetails admin = User.withUsername(adminUsername)
+                .password(encoder.encode(adminPassword))
                 .roles("ADMIN")
                 .build();
 

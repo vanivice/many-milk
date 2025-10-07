@@ -5,10 +5,15 @@ import com.application.manymilk.model.db.repository.ClientRepository;
 import com.application.manymilk.model.dto.request.ClientRequest;
 import com.application.manymilk.model.dto.response.ClientResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -18,10 +23,9 @@ public class ClientService {
     private final ClientRepository clientRepository;
 
     // Получить всех клиентов
-    public List<ClientResponse> getAllClients() {
-        return clientRepository.findAllByOrderByIdAsc().stream()
-                .map(ClientResponse::new)
-                .collect(Collectors.toList());
+    public Page<ClientResponse> getAllClients(Pageable pageable) {
+        return clientRepository.findAllByOrderByIdAsc(pageable)
+                .map(ClientResponse::new);
     }
 
     // Получить клиента по id
@@ -31,51 +35,35 @@ public class ClientService {
                 .orElse(null);
     }
 
-    // Поиск клиентов по последним 4 цифрам телефона
+    // Поиск клиентов по телефону (вхождение)
     public List<ClientResponse> searchClientsByPhone(String phone) {
 
         if (phone == null || phone.trim().isEmpty()) {
-            return getAllClients();
+            return List.of();
         }
 
-        String input = phone.trim();
+        String digits = phone.replaceAll("\\D", ""); // оставляем только цифры
 
-        // убираем все нецифровые символы для сравнения последних цифр
-        String digitsInput = input.replaceAll("\\D", "");
-        String last4 = digitsInput.length() >= 4
-                ? digitsInput.substring(digitsInput.length() - 4)
-                : digitsInput;
-
-        // ищем точное совпадение по формату
-        List<ClientResponse> exactMatches = clientRepository.findAll().stream()
-                .filter(c -> c.getPhoneNumber() != null &&
-                        c.getPhoneNumber().equals(input))
+        List<ClientResponse> exactMatches = clientRepository.findByPhoneNumber(phone).stream()
                 .map(ClientResponse::new)
-                .collect(Collectors.toList());
+                .toList();
 
-        if (!exactMatches.isEmpty()) {
-            return exactMatches;
-        }
+        if (!exactMatches.isEmpty()) return exactMatches;
 
-        // Если точных совпадений нет — ищем по последним 4 цифрам
-        return clientRepository.findAll().stream()
-                .filter(c -> c.getPhoneNumber() != null &&
-                        c.getPhoneNumber().replaceAll("\\D", "").endsWith(last4))
+        return clientRepository.findByPhoneContaining(digits).stream()
                 .map(ClientResponse::new)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     // Поиск клиентов по нику Telegram/WhatsApp
     public List<ClientResponse> searchClientsByNick(String nick) {
-        if (nick == null || nick.isEmpty()) return getAllClients();
-
-        String lowerNick = nick.toLowerCase();
-        return clientRepository.findAll().stream()
-                .filter(c -> (c.getTelegramNick() != null && c.getTelegramNick().toLowerCase().contains(lowerNick))
-                        || (c.getWhatsAppNick() != null && c.getWhatsAppNick().toLowerCase().contains(lowerNick)))
+        return clientRepository.findByNickContaining(nick)
+                .stream()
                 .map(ClientResponse::new)
-                .collect(Collectors.toList());
+                .toList();
     }
+
+
 
     // Сохранение нового клиента из DTO
     public ClientResponse createClient(ClientRequest request) {
@@ -102,7 +90,7 @@ public class ClientService {
         LocalDate threshold = LocalDate.now().minusDays(days);
         return clientRepository.findByLastOrderDateBefore(threshold).stream()
                 .map(ClientResponse::new)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     // Обновление клиента по id
@@ -193,5 +181,15 @@ public class ClientService {
                     digits.substring(9, 11));
         }
         throw new IllegalArgumentException("Неверный формат номера: " + phone);
+    }
+
+    // подсчет клиентов
+    public long countAllClients() {
+        return clientRepository.count();
+    }
+
+    public long countInactiveClients(int days) {
+        LocalDate cutoffDate = LocalDate.now().minusDays(days);
+        return clientRepository.countInactiveClientsSince(cutoffDate);
     }
 }

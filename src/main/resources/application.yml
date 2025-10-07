@@ -38,27 +38,37 @@ server:
  address: 0.0.0.0
  port: 8080
 
+# кастомный пароль и логин
+admin:
+  username: admin
+  password: adminZqT1
+#
+
 #server:
 #  server.address=0.0.0.0
 #  server.port=${PORT:8080}
 
+yandex:
+  disk:
+    token: "y0__xCPi_G5CBjG2DognMikzBR5c4QfZiMNLoernzIVKoxup9gOBg"
+
 spring:
   datasource:
-    url: jdbc:h2:file:./data/manymilk   # база будет храниться в папке ./data
+    url: jdbc:h2:file:./data/manymilk
     driver-class-name: org.h2.Driver
     username: sa
     password:
   jpa:
     hibernate:
-      ddl-auto: update   # update = не удаляет данные, только обновляет структуру
-    show-sql: false      # отключаем вывод SQL Hibernate
+      ddl-auto: update
+    show-sql: false
     properties:
       hibernate:
         format_sql: false
   h2:
     console:
       enabled: true
-      path: /h2-console   # веб-консоль по адресу http://localhost:8080/h2-console
+      path: /h2-console
 
   thymeleaf:
     cache: false

@@ -10,7 +10,7 @@
 <body class="bg-gray-50 min-h-screen flex flex-col">
 
 <!-- Шапка -->
-<nav class="bg-white shadow-md p-4">
+<nav class="bg-white shadow-md p-4 w-full fixed top-0 left-0 z-50">
     <div class="container mx-auto flex justify-between items-center">
         <!-- Логотип с версией -->
         <div class="flex items-center gap-1">
@@ -28,12 +28,12 @@
 </nav>
 
 <!-- Main Content -->
-<main class="p-6">
+<main class="p-6 container mx-auto mt-20">
     <h2 class="text-xl font-semibold mb-4">Неактивные клиенты</h2>
 
     <!-- Список неактивных клиентов -->
     <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        <div th:each="client : ${clients}" class="bg-white rounded-lg shadow p-4 flex flex-col justify-between hover:shadow-lg transition">
+        <div th:each="client : ${clients}" class="bg-red-100 rounded-lg shadow p-4 flex flex-col justify-between hover:shadow-lg transition">
             <!-- Заголовок -->
             <div class="flex justify-between items-center mb-2">
                 <h3 class="text-lg font-bold truncate" th:text="${client.name}" th:title="${client.name}">Имя</h3>
